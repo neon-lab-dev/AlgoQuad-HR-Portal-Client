@@ -1,0 +1,303 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-Montserrat: "Montserrat", sans-serif;
+
+  /* Colors */
+
+  /* Primary */
+  --color-primary-10: #32AADB;
+  --color-primary-15: #dc2626;
+  --color-primary-20: #c0392b;
+  --color-primary-25: #fb7185;
+  --color-primary-30: #FEF2F2;
+  --color-primary-35: #FCA5A5; 
+  --color-primary-40: #EA580C; 
+
+  /* Neutral */
+  --color-neutral-5: #000000;
+  --color-neutral-10: #262626;
+  --color-neutral-15: #111111;
+  --color-neutral-20: #171717;
+  --color-neutral-25: #1e293b;
+  --color-neutral-30: #27272a;
+  --color-neutral-35: #263238;
+  --color-neutral-40: #2c2c2c;
+  --color-neutral-50: #404040;
+  --color-neutral-60: #525252;
+  --color-neutral-65: #525252d9;
+  --color-neutral-70: #64748b;
+  --color-neutral-75: #6b7280;
+  --color-neutral-80: #71717a;
+  --color-neutral-85: #737373;
+  --color-neutral-90: #d4d4d4;
+  --color-neutral-95: #d4d4d8;
+  --color-neutral-97: #e4e4e7;
+  --color-neutral-98: #e2e8f0;
+  --color-neutral-99: #f1f5f9;
+  --color-neutral-100: #fafafa;
+  --color-neutral-105: #f3f4f6;
+  --color-neutral-110: #1F2937;
+  --color-neutral-115: #3F3F46;
+  --color-neutral-120: #E5E7EB;
+  --color-neutral-125: #94A3B8;
+  --color-neutral-130: #18181B;
+  --color-neutral-135: #F5F5F5;
+  --color-neutral-140: #4A4A5A;
+  --color-neutral-145: #52525B;
+  --color-neutral-150: #F1F5F9 ;
+  --color-neutral-155: #E7E5E4 ;
+  --color-neutral-160: #4B5563 ;
+  --color-neutral-165: #E5E5E5 ;
+  --color-neutral-170: #ebedee ;
+  --color-neutral-175: #525252 ;
+  --color-neutral-180: #404040 ;
+  --color-neutral-185: #D1D1D1 ;
+  --color-neutral-190: #F6F6F6 ;
+  --color-neutral-195: #4f4f4f ;
+
+
+  
+
+  /* Surface / Backgrounds */
+  --color-surface-5: #F0FDF4;
+  --color-surface-10: #f0f0fa;
+  --color-surface-20: #f0f9ff;
+  --color-surface-30: #f8fafc;
+  --color-surface-40: #eff6ff;
+  --color-surface-50: #ecfdf5;
+  --color-surface-60: #fff7ed;
+  --color-surface-70: #cffafe;
+  --color-surface-75: #E0F2FE;
+  --color-surface-80: #3B82F6;
+  --color-surface-85: #4F46E5;
+  --color-surface-90: #CBD5E1;
+  --color-surface-95: #93C5FD;
+  --color-surface-100: #2563EB;
+
+
+  /* accent */
+  --color-accent-5: #0f172a;
+  --color-accent-10: #111827;
+
+  /* Success */
+  --color-success-5: #ecfdf5;
+  --color-success-10: #cffafe;
+  --color-success-15: #059669;
+  --color-success-20: #16a34a; 
+  --color-success-25: #86EFAC; 
+  --color-success-30: #DCFCE7; 
+
+
+
+  /* Extra */
+  --color-glass-10: #6e78831f; 
+
+  /* White */
+  --color-white: #ffffff;
+
+  /* secondary */
+  --color-secondary-10: #9d6100;
+  --color-secondary-15: #92400e;
+  --color-secondary-20: #FEF3C7;
+  --color-secondary-25: #F5F5F4;
+
+
+
+
+  /* Shadows */
+  --shadow-navbar: 0 0 100px 0 rgba(0, 0, 0, 0.07);
+
+  /* Gradients */
+  --bg-gradient-hero: linear-gradient(0deg, #FFF 0%, rgba(255, 255, 255, 0.00) 100%);
+  --bg-gradient-footer: linear-gradient(0deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.10) 100%), var(--stone-900, #1C1917);
+  --bg-gradient-course: linear-gradient(180deg, rgba(254, 242, 242, 0.00) 0%, #FEF2F2 100%);
+  --bg-gradient-profile-picture: radial-gradient(194.91% 131.04% at 84.5% 113.5%, #F50B5E 19.76%, #DF0897 52.03%, #962FBF 76.88%, #4F5BD5 93.34%);
+  --bg-gradient-terms-and-conditions: linear-gradient(180deg, #F6F8FA 0%, #F6F8FA 100%);
+  --bg-gradient-section-blur: linear-gradient(4deg, #FFF 4.15%, #F6F8FA 115.15%);
+  --bg-gradient-course-blur: linear-gradient(4deg, #FFF 4.15%, #FEF2F2 115.15%);
+  --bg-gradient-faq-blur: linear-gradient(4deg, #FFF 4.16%, rgba(254, 242, 242, 0.60) 97.06%);
+  --bg-gradient-good-news: linear-gradient(180deg, rgba(239, 246, 255, 0.00) 0%, #EFF6FF 100%);
+  --bg-gradient-good-news-blur: linear-gradient(4deg, #FFF 4.15%, #EFF6FF 115.15%);
+  --bg-gradient-newsletter: linear-gradient(180deg, rgba(254, 252, 232, 0.00) 0%, #FEFCE8 100%);
+  --bg-gradient-weekly-form-blur: linear-gradient(9deg, #FFF 7.77%, #FEFDEC 94.52%);
+  --bg-gradient-course-card-blur: linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 119.57%);
+  --bg-gradient-dashboard-card: linear-gradient(90deg, #C41A1F 0%, #1F2937 103.17%);
+  --bg-gradient-courses-section:linear-gradient(9deg, #FFF 7.77%, #FFFAFA 94.52%);
+  --bg-gradient-courses-section-bg:linear-gradient(180deg, rgba(254, 242, 242, 0.00) 0%, rgba(254, 242, 242, 0.40) 100%);
+  --bg-gradient-courses-bundle: linear-gradient(9deg, #FFF 7.77%, #EFF6FF 94.52%);
+  --bg-gradient-why-us:linear-gradient(180deg, rgba(254, 252, 232, 0.00) 0%, #FEFCE8 100%);
+  --bg-gradient-why-us-section: linear-gradient(4deg, #FFF 4.15%, #FEFCE8 115.15%);
+  --bg-gradient-brown: linear-gradient(90deg, rgba(192, 57, 43, 0.60) 3.47%, rgba(157, 97, 0, 0.60) 110.42%);
+  --bg-gradient-brown-text: linear-gradient(90deg, #C0392B 3.47%, #9D6100 110.42%); 
+  --bg-gradient-brown-bg: linear-gradient(90deg, #C41A1F 0%, #1F2937 103.17%);
+  --bg-gradient-cart: linear-gradient(180deg, rgba(248, 250, 252, 0.00) 0%, #F8FAFC 100%);
+
+  
+  
+}
+
+.bg-gradient-hero {
+  background: var(--bg-gradient-hero);
+}
+
+.bg-gradient-footer {
+  background: var(--bg-gradient-footer);
+}
+
+.bg-gradient-course {
+  background: var(--bg-gradient-course);
+}
+
+.bg-gradient-profile-picture {
+  background: var(--bg-gradient-profile-picture);
+}
+
+.bg-profile-picture {
+  background: var(--bg-profile-picture);
+}
+
+.bg-gradient-terms-and-conditions {
+  background: var(--bg-gradient-terms-and-conditions);
+}
+.bg-gradient-section-blur {
+  background: var(--bg-gradient-section-blur);
+}
+.bg-gradient-course-blur {
+  background: var(--bg-gradient-course-blur);
+}
+.bg-gradient-faq-blur {
+  background: var(--bg-gradient-faq-blur);
+}
+.bg-gradient-good-news{
+  background: var(--bg-gradient-good-news);
+}
+.bg-gradient-good-news-blur{
+  background: var(--bg-gradient-good-news-blur);
+}
+.bg-gradient-newsletter{
+  background: var(--bg-gradient-newsletter);
+}
+.bg-gradient-weekly-form-blur{
+  background: var(--bg-gradient-weekly-form-blur);
+}
+.bg-gradient-course-card-blur{
+  background: var(--bg-gradient-course-card-blur);
+}
+.bg-gradient-dashboard-card{
+  background: var(--bg-gradient-dashboard-card);
+}
+.bg-gradient-courses-section{
+  background: var(--bg-gradient-courses-section);
+}
+.bg-gradient-courses-section-bg{
+  background: var(--bg-gradient-courses-section-bg);
+}
+.bg-gradient-courses-bundle{
+  background: var(--bg-gradient-courses-bundle);
+}
+.bg-gradient-why-us{
+  background: var(--bg-gradient-why-us);
+}
+.bg-gradient-why-us-section{
+  background: var(--bg-gradient-why-us-section);
+}
+.bg-gradient-brown{
+  background: var(--bg-gradient-brown);
+}
+.bg-gradient-brown-text{
+  background: var(--bg-gradient-brown-text);
+}
+.bg-gradient-brown-bg{
+  background: var(--bg-gradient-brown-bg);
+}
+.bg-gradient-cart{
+  background: var(--bg-gradient-cart);
+}
+
+
+/* Custom scrollbar for a specific section */
+.custom-scrollbar {
+  overflow-y: auto;
+  max-height: 400px;
+  /* Adjust height as needed */
+}
+
+/* Scrollbar Track (non-scrolled area) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  /* Scrollbar width */
+}
+
+/* Scrollbar Thumb (scrolled area) */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #1d293d;
+  /* Dark blue scrollbar */
+  border-radius: 4px;
+}
+
+/* Scrollbar Track (background) */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #020618;
+  /* Dark background for non-scrolled area */
+}
+
+/* Only apply to divs with custom-scrollbar class */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+  height: 3px; /* for horizontal scrolling */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 5px;
+}
+
+/* Firefox support */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: gray transparent;
+}
+
+/* Swiper Pagination Dots Custom Styles */
+.swiper-pagination-bullet {
+  background-color: #888888 !important;
+  opacity: 1 !important;
+  width: 8px;
+  height: 8px;
+  margin: 0 6px !important;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #06a0ed !important;
+  width: 12px;
+  height: 12px;
+  transform: translateY(-2px);
+}
+
+
+/* src/index.css */
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+button {
+  cursor: pointer;
+}
