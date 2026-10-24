@@ -150,7 +150,7 @@ function Table<T extends Record<string, any>>({
       {/* Floating Dropdown */}
       {openMenu && (
         <div
-          className="fixed z-50 w-48 bg-white rounded-md shadow-lg py-1 border border-neutral-98"
+          className="fixed z-50 w-50 bg-white rounded-md shadow-lg py-1 border border-neutral-98"
           style={{
             top: openMenu.y + 10,
             left: Math.max(openMenu.x - 180, 8), // clamp to viewport left

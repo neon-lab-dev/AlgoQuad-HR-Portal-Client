@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import TextInput from "../../../components/Reusable/TextInput/TextInput";
 import Button from "../../../components/Reusable/Button/Button";
 import { useState } from "react";
-import { useAddLectureMutation } from "../../../redux/Features/Course/courseApi";
+import { useAddLectureMutation } from "../../../redux/Features/Job/jobApi";
 import toast from "react-hot-toast";
 
 export type TLecture = {

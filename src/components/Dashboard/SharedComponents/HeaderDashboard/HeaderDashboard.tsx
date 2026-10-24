@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ICONS } from "../../../../assets";
 import { useSelector } from "react-redux";
 import { useCurrentUser } from "../../../../redux/Features/Auth/authSlice";
@@ -8,45 +8,6 @@ import DashboardHamburgerMenu from "../../DashboardHamburgerMenu/DashboardHambur
 
 const HeaderDashboard = () => {
   const user = useSelector(useCurrentUser) as TUser;
-  const location = useLocation();
-
-  const pageTitles: Record<string, string> = {
-    "/dashboard": "Dashboard",
-    "/dashboard/my-courses": "My Courses",
-    "/dashboard/attend-exam/:id": "Attend Exam",
-    "/dashboard/my-orders": "My Orders",
-    "/dashboard/consultations": "Consultations",
-    "/dashboard/my-profile": "Private Group Access",
-    "/dashboard/certificates": "My Profile",
-    "/dashboard/fashion": "Fashion & Apparel",
-    "/dashboard/recent-activities": "All Activities",
-    "/dashboard/book-new-session": "Consultations",
-    "/dashboard/my-subscriptions": "My Subscriptions",
-    "/dashboard/cancel-subscription": "My Subscriptions",
-    "/dashboard/helpdesk": "Helpdesk",
-    "/dashboard/admin": "Dashboard",
-    "/dashboard/admin/products": "Products",
-    "/dashboard/admin/add-or-edit-product": "Manage Product",
-    "/dashboard/admin/newsletter": "Newsletters",
-    "/dashboard/admin/category": "Categories",
-    "/dashboard/admin/product-orders": "Product Orders",
-    "/dashboard/admin/offer-notice": "Offer Notice",
-    "/dashboard/admin/course-orders": "Course Orders",
-    "/dashboard/admin/courses": "Courses",
-    "/dashboard/admin/manage-course": "Manage Course",
-    "/dashboard/admin/manage-availability": "Manage Availability",
-    "/dashboard/admin/manage-consultations": "Manage Consultations",
-    "/dashboard/admin/manage-subscriptions": "Manage Subscriptions",
-    "/dashboard/admin/manage-coupon-codes": "Manage Coupon Codes",
-    "/dashboard/admin/queries": "Queries",
-  };
-
-  let currentTitle = pageTitles[location.pathname] || "";
-  if (location.pathname.startsWith("/dashboard/my-courses/")) {
-    currentTitle = "My Courses";
-  } else if (location.pathname.startsWith("/dashboard/attend-exam/")) {
-    currentTitle = "Attend Exam";
-  }
 
   // Real-time date state
   const [currentDate, setCurrentDate] = useState<string>(
@@ -77,7 +38,7 @@ const HeaderDashboard = () => {
     <div className="bg-white p-6 border-b border-b-neutral-98 text-3xl flex justify-between items-center pr-4 sticky top-0 z-20 font-Montserrat">
       <DashboardHamburgerMenu />
       <div className="text-neutral-20 space-y-1 hidden xl:flex flex-col">
-        <h2 className="font-medium text-2xl">{currentTitle}</h2>
+        <h2 className="font-medium text-2xl">Good Morning, HR</h2>
         <span className="text-[13px]">{currentDate}</span>
       </div>
       <ul className="flex gap-5">

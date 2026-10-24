@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import {
   useDeleteCourseMutation,
   useGetAllCoursesQuery,
-} from "../../../redux/Features/Course/courseApi";
+} from "../../../redux/Features/Job/jobApi";
 import { formatDate } from "../../../utils/formatDate";
 import type { TCourse } from "../../../types/course.types";
 import Dropdown from "../../Reusable/Dropdown/Dropdown";

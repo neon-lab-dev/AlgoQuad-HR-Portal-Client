@@ -1,6 +1,5 @@
-// src/pages/hr/JobDetails.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useState } from "react";
+import {  useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
@@ -17,186 +16,15 @@ import DashboardContainer from "../../../components/Dashboard/SharedComponents/D
 import Button from "../../../components/Reusable/Button/Button";
 import JobStatusBadge from "../../../components/Reusable/JobStatusBadge/JobStatusBadge";
 import { formatDate } from "../../../utils/formatDate";
-
-// ---- Mock (replace with useGetJobByIdQuery later) ----
-const jobsMock = [
-  {
-    _id: "JOB-001",
-    title: "Senior React Developer",
-    department: "Engineering",
-    openings: 2,
-    description:
-      "We are looking for a Senior React Developer to help build and scale our core recruitment platform. You will work closely with design, backend, and product to ship clean, maintainable features used by HR teams across the company.",
-    responsibilities: [
-      "Design and build reusable React components",
-      "Collaborate with backend to shape APIs",
-      "Mentor junior developers",
-      "Own code quality and performance",
-    ],
-    skills: ["React", "TypeScript", "Redux", "Tailwind", "REST APIs"],
-    qualifications: [
-      "5+ years of front-end experience",
-      "Strong TypeScript knowledge",
-      "Experience with design systems",
-    ],
-    location: "Bengaluru, India",
-    employmentType: "Full-time",
-    status: "Active",
-    isReferralEnabled: true,
-    createdBy: "Priya Menon",
-    createdAt: "2025-09-01T10:00:00Z",
-    updatedAt: "2025-09-10T14:00:00Z",
-  },
-
-  {
-    _id: "JOB-002",
-    title: "UI/UX Designer",
-    department: "Design",
-    openings: 1,
-    description:
-      "Own the end-to-end design of our new products, from user research and wireframes to polished, production-ready UI. You will partner closely with engineering and product to ship a consistent, delightful experience.",
-    responsibilities: [
-      "Run user research and usability tests",
-      "Create wireframes, prototypes, and final UI",
-      "Maintain and evolve our design system",
-      "Collaborate with engineering on implementation",
-    ],
-    skills: ["Figma", "Design Systems", "Prototyping", "User Research"],
-    qualifications: [
-      "3+ years of product design experience",
-      "Strong portfolio of shipped work",
-      "Comfortable in a fast-paced product team",
-    ],
-    location: "Remote (India)",
-    employmentType: "Full-time",
-    status: "Active",
-    isReferralEnabled: true,
-    createdBy: "Priya Menon",
-    createdAt: "2025-09-05T10:00:00Z",
-    updatedAt: "2025-09-05T10:00:00Z",
-  },
-
-  {
-    _id: "JOB-003",
-    title: "Backend Engineer (Node.js)",
-    department: "Engineering",
-    openings: 3,
-    description:
-      "Design and build the APIs and data models that power our recruitment portal. You will own backend services end-to-end, from schema design to deployment and monitoring.",
-    responsibilities: [
-      "Design REST/GraphQL APIs and data models",
-      "Write clean, testable Node.js services",
-      "Own database schema and migrations",
-      "Monitor and improve API performance",
-    ],
-    skills: ["Node.js", "PostgreSQL", "REST", "Docker", "AWS"],
-    qualifications: [
-      "4+ years of backend experience",
-      "Strong SQL and schema design skills",
-      "Experience deploying to cloud environments",
-    ],
-    location: "Hybrid — Pune, India",
-    employmentType: "Full-time",
-    status: "Closed",
-    isReferralEnabled: false,
-    createdBy: "Priya Menon",
-    createdAt: "2025-08-20T10:00:00Z",
-    updatedAt: "2025-09-15T10:00:00Z",
-  },
-
-  {
-    _id: "JOB-004",
-    title: "QA Engineer (Intern)",
-    department: "Engineering",
-    openings: 2,
-    description:
-      "Kick-start your QA career by helping us keep the portal reliable. You will work alongside senior QA engineers to write and run manual and automated tests for new features.",
-    responsibilities: [
-      "Write and execute manual test cases",
-      "Automate regression tests with Jest/Cypress",
-      "Report and track bugs",
-      "Collaborate with engineers on fixes",
-    ],
-    skills: ["Manual Testing", "Jest", "Cypress"],
-    qualifications: [
-      "Final-year student or recent graduate",
-      "Basic knowledge of testing concepts",
-      "Strong attention to detail",
-    ],
-    location: "On-site — Hyderabad, India",
-    employmentType: "Intern",
-    status: "Draft",
-    isReferralEnabled: false,
-    createdBy: "Priya Menon",
-    createdAt: "2025-09-18T10:00:00Z",
-    updatedAt: "2025-09-18T10:00:00Z",
-  },
-];
-
-const candidatesForJobMock = [
-  {
-    _id: "CAND-001",
-    name: "Ayesha Rahman",
-    email: "ayesha@example.com",
-    phone: "+8801700000001",
-    experience: 5,
-    source: "HR",
-    referredBy: null,
-    rating: 8,
-    status: "Interview",
-    createdAt: "2025-09-10T09:00:00Z",
-  },
-  {
-    _id: "CAND-003",
-    name: "Nusrat Jahan",
-    email: "nusrat@example.com",
-    phone: "+8801700000003",
-    experience: 7,
-    source: "HR",
-    referredBy: null,
-    rating: 9,
-    status: "Selected",
-    createdAt: "2025-09-08T08:00:00Z",
-  },
-  {
-    _id: "CAND-005",
-    name: "Fahim Chowdhury",
-    email: "fahim@example.com",
-    phone: "+8801700000005",
-    experience: 6,
-    source: "HR",
-    referredBy: null,
-    rating: 7,
-    status: "Hired",
-    createdAt: "2025-08-28T09:00:00Z",
-  },
-];
+import { useGetSingleJobByIdQuery } from "../../../redux/Features/Job/jobApi";
 
 const JobDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
-  // Replace with: const { data } = useGetJobByIdQuery(id!);
-  const job = useMemo(
-    () => jobsMock.find((j) => j._id === id) || jobsMock[0],
-    [id]
-  );
-
-  // Replace with: useGetAllCandidatesQuery({ jobId: id })
-  const candidates = candidatesForJobMock;
+  const { data } = useGetSingleJobByIdQuery(id!);
+  const job = data?.data || {};
 
   const [status, setStatus] = useState(job.status);
-
-  // ---- Pipeline stats ----
-  const pipeline = {
-    total: candidates.length,
-    new: candidates.filter((c) => c.status === "New").length,
-    screening: candidates.filter((c) => c.status === "Screening").length,
-    interview: candidates.filter((c) => c.status === "Interview").length,
-    selected: candidates.filter((c) => c.status === "Selected").length,
-    rejected: candidates.filter((c) => c.status === "Rejected").length,
-    hired: candidates.filter((c) => c.status === "Hired").length,
-  };
 
   // ---- Handlers ----
   const handleStatusChange = (next: string) => {
@@ -217,7 +45,6 @@ const JobDetails = () => {
         </button>
 
         <div className="flex items-center gap-3 flex-wrap">
-          
           <Button
             variant="secondary"
             onClick={() => navigate(`/hr/jobs/edit/${job._id}`)}
@@ -302,19 +129,19 @@ const JobDetails = () => {
             <div className="rounded-xl border border-neutral-98 p-4">
               <p className="text-xs text-neutral-65">Applicants</p>
               <p className="text-2xl font-bold text-neutral-40 mt-1">
-                {pipeline.total}
+                1
               </p>
             </div>
             <div className="rounded-xl border border-neutral-98 p-4">
               <p className="text-xs text-neutral-65">In Interview</p>
               <p className="text-2xl font-bold text-indigo-600 mt-1">
-                {pipeline.interview}
+                2
               </p>
             </div>
             <div className="rounded-xl border border-neutral-98 p-4">
               <p className="text-xs text-neutral-65">Hired</p>
               <p className="text-2xl font-bold text-green-600 mt-1">
-                {pipeline.hired}
+                1
               </p>
             </div>
           </div>
@@ -324,23 +151,23 @@ const JobDetails = () => {
         <div className="h-px bg-neutral-98 my-6" />
 
         {/* Description + responsibilities + skills + qualifications */}
-          {/* Left 2/3: description */}
-          <div className="lg:col-span-2 flex flex-col gap-6">
-            <div>
-              <h3 className="text-sm font-semibold text-neutral-40 uppercase tracking-wide mb-2">
-                Job Description
-              </h3>
-              <p className="text-sm text-neutral-65 leading-relaxed">
-                {job.description}
-              </p>
-            </div>
+        {/* Left 2/3: description */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <div>
+            <h3 className="text-sm font-semibold text-neutral-40 uppercase tracking-wide mb-2">
+              Job Description
+            </h3>
+            <p className="text-sm text-neutral-65 leading-relaxed">
+              {job.description}
+            </p>
+          </div>
 
-            <div>
+          <div>
             <h3 className="text-sm font-semibold text-neutral-40 uppercase tracking-wide mb-3">
               Required Skills
             </h3>
             <div className="flex flex-wrap gap-2">
-              {job.skills.map((s) => (
+              {job.skills.map((s:string) => (
                 <span
                   key={s}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-105 text-neutral-40 border border-neutral-98 hover:border-primary-10 hover:text-primary-10 transition-colors cursor-default"
@@ -351,44 +178,47 @@ const JobDetails = () => {
             </div>
           </div>
 
-            {job.responsibilities?.length > 0 && (
-              <div>
-                <h3 className="text-sm font-semibold text-neutral-40 uppercase tracking-wide mb-2">
-                  Responsibilities
-                </h3>
-                <ul className="flex flex-col gap-2">
-                  {job.responsibilities.map((r, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2 text-sm text-neutral-65"
-                    >
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary-10 shrink-0" />
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          {job.responsibilities?.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-neutral-40 uppercase tracking-wide mb-2">
+                Responsibilities
+              </h3>
+              <ul className="flex flex-col gap-2">
+                {job.responsibilities.map((r:string, i:number) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2 text-sm text-neutral-65"
+                  >
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary-10 shrink-0" />
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-            {job.qualifications?.length > 0 && (
-              <div>
-                <h3 className="text-sm font-semibold text-neutral-40 uppercase tracking-wide mb-2">
-                  Qualifications
-                </h3>
-                <ul className="flex flex-col gap-2">
-                  {job.qualifications.map((q, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2 text-sm text-neutral-65"
-                    >
-                      <FiCheckCircle className="text-green-500 mt-0.5 shrink-0" size={14} />
-                      {q}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+          {job.qualifications?.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-neutral-40 uppercase tracking-wide mb-2">
+                Qualifications
+              </h3>
+              <ul className="flex flex-col gap-2">
+                {job.qualifications.map((q:string, i:number) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2 text-sm text-neutral-65"
+                  >
+                    <FiCheckCircle
+                      className="text-green-500 mt-0.5 shrink-0"
+                      size={14}
+                    />
+                    {q}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </DashboardContainer>
     </div>
   );

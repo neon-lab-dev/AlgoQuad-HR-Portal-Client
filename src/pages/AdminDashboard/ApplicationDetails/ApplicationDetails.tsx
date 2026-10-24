@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -24,16 +25,8 @@ import Button from "../../../components/Reusable/Button/Button";
 import CandidateStatusBadge from "../../../components/Reusable/CandidateStatusBadge/CandidateStatusBadge";
 import { formatDate } from "../../../utils/formatDate";
 import ChangeRatingModal from "../../../components/AdminDashboard/ApplicationDetailsPage/ChangeRatingModal/ChangeRatingModal";
+import ChangeApplicationStatusModal from "../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
 
-const STATUS_OPTIONS = [
-  "New",
-  "Screening",
-  "Interview",
-  "Selected",
-  "Rejected",
-  "Hired",
-] as const;
-type CandidateStatus = (typeof STATUS_OPTIONS)[number];
 
 // ---- Mock data (replace with useGetCandidateByIdQuery later) ----
 const candidatesMock = [
@@ -51,7 +44,7 @@ const candidatesMock = [
     resumeFileName: "Ananya_Deshpande_CV.pdf",
     source: "HR",
     rating: 8,
-    status: "Interview" as CandidateStatus,
+    status: "Interview",
     skills: ["React", "TypeScript", "Redux", "Tailwind"],
     statusHistory: [
       { status: "New",       changedBy: "Priya Menon",   changedAt: "2025-09-10T09:00:00Z", note: "Application received" },
@@ -76,7 +69,7 @@ const candidatesMock = [
     source: "Referral",
     referredBy: "Arjun Sharma",
     rating: 6,
-    status: "Screening" as CandidateStatus,
+    status: "Screening",
     skills: ["Figma", "Design Systems", "Prototyping"],
     statusHistory: [
       { status: "New",       changedBy: "Priya Menon", changedAt: "2025-09-12T11:00:00Z", note: "Referred by Arjun Sharma" },
@@ -99,7 +92,7 @@ const candidatesMock = [
     resumeFileName: "Sneha_Iyer_CV.pdf",
     source: "HR",
     rating: 9,
-    status: "Selected" as CandidateStatus,
+    status: "Selected",
     skills: ["React", "Next.js", "Node.js"],
     statusHistory: [
       { status: "New",       changedBy: "Priya Menon", changedAt: "2025-09-08T08:00:00Z" },
@@ -125,7 +118,7 @@ const candidatesMock = [
     source: "Referral",
     referredBy: "Arjun Sharma",
     rating: 5,
-    status: "Rejected" as CandidateStatus,
+    status: "Rejected",
     skills: ["Node.js", "Express", "MongoDB"],
     statusHistory: [
       { status: "New",       changedBy: "Priya Menon", changedAt: "2025-09-05T09:00:00Z" },
@@ -149,7 +142,7 @@ const candidatesMock = [
     resumeFileName: "Aditya_Kulkarni_CV.pdf",
     source: "HR",
     rating: 7,
-    status: "Hired" as CandidateStatus,
+    status: "Hired",
     skills: ["React", "GraphQL", "AWS"],
     statusHistory: [
       { status: "New",       changedBy: "Priya Menon", changedAt: "2025-08-28T09:00:00Z" },
@@ -164,8 +157,7 @@ const candidatesMock = [
 ];
 
 // ---- Status → icon/color for timeline ----
-const statusMeta: Record<
-  CandidateStatus,
+const statusMeta: Record<any,
   { icon: React.ReactNode; ring: string; bg: string; text: string }
 > = {
   New:       { icon: <FiClock />,       ring: "ring-slate-300",  bg: "bg-slate-100",  text: "text-slate-600" },
@@ -188,36 +180,16 @@ const ApplicationDetails = () => {
 
   // Local state so edits reflect immediately (no backend yet)
   const [rating, setRating] = useState<number>(candidate.rating ?? 0);
-  const [status, setStatus] = useState<CandidateStatus>(candidate.status);
+  const [status, setStatus] = useState<any>(candidate.status);
   const [history, setHistory] = useState(candidate.statusHistory);
 
   // ---- Status modal ----
-  const [statusModalOpen, setStatusModalOpen] = useState(false);
-  const [newStatus, setNewStatus] = useState<CandidateStatus>(candidate.status);
-  const [statusNote, setStatusNote] = useState("");
+ const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] =
+    useState<boolean>(false);
 
   // ---- Rating modal ----
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [ratingInput, setRatingInput] = useState<number>(rating);
-
-  // ---- Handlers ----
-  const handleStatusSave = () => {
-    if (newStatus === status) {
-      toast.error("Select a different status.");
-      return;
-    }
-    const entry = {
-      status: newStatus,
-      changedBy: "Sadia Islam",
-      changedAt: new Date().toISOString(),
-      note: statusNote || undefined,
-    };
-    setHistory((h) => [...h, entry]);
-    setStatus(newStatus);
-    setStatusModalOpen(false);
-    setStatusNote("");
-    toast.success(`Status changed to ${newStatus}.`);
-  };
 
   const handleRatingSave = () => {
     const r = Math.max(0, Math.min(10, Number(ratingInput) || 0));
@@ -253,9 +225,7 @@ const ApplicationDetails = () => {
           <Button
             variant="primary"
             onClick={() => {
-              setNewStatus(status);
-              setStatusNote("");
-              setStatusModalOpen(true);
+              setIsChangeStatusModalOpen(true);
             }}
             label="Change Status"
             classNames="py-2 px-3 border-2 border-primary-10"
@@ -478,7 +448,7 @@ const ApplicationDetails = () => {
 
           <ol className="relative border-l-2 border-neutral-98 ml-3 space-y-6">
             {history.map((entry, idx) => {
-              const meta = statusMeta[entry.status as CandidateStatus];
+              const meta = statusMeta[entry.status];
               return (
                 <li key={idx} className="ml-6">
                   <span
@@ -506,64 +476,6 @@ const ApplicationDetails = () => {
         </DashboardContainer>
       </div>
 
-      {/* ---- Status Change Modal ---- */}
-      {statusModalOpen && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 font-Montserrat">
-            <h2 className="text-lg font-bold text-neutral-40 mb-1">
-              Change Recruitment Status
-            </h2>
-            <p className="text-sm text-neutral-65 mb-4">
-              {candidate.name} — currently{" "}
-              <span className="font-medium">{status}</span>
-            </p>
-
-            <label className="block text-sm text-neutral-40 mb-1">
-              New Status
-            </label>
-            <select
-              value={newStatus}
-              onChange={(e) =>
-                setNewStatus(e.target.value as CandidateStatus)
-              }
-              className="w-full border border-neutral-30 rounded-lg px-3 py-2 text-sm mb-4 outline-none"
-            >
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-
-            <label className="block text-sm text-neutral-40 mb-1">
-              Note (optional)
-            </label>
-            <textarea
-              value={statusNote}
-              onChange={(e) => setStatusNote(e.target.value)}
-              rows={3}
-              placeholder="Reason for status change..."
-              className="w-full border border-neutral-30 rounded-lg px-3 py-2 text-sm mb-5 outline-none resize-none"
-            />
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setStatusModalOpen(false)}
-                className="px-4 py-2 rounded-lg border border-neutral-30 text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleStatusSave}
-                className="px-4 py-2 rounded-lg bg-primary-10 text-white text-sm"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ---- Rating Modal ---- */}
       <ChangeRatingModal
   isModalOpen={ratingModalOpen}
@@ -575,6 +487,11 @@ const ApplicationDetails = () => {
     toast.success(`Rating updated to ${newRating}/10.`);
   }}
 />
+
+<ChangeApplicationStatusModal
+        isModalOpen={isChangeStatusModalOpen}
+        setIsModalOpen={setIsChangeStatusModalOpen}
+      />
     </div>
   );
 };

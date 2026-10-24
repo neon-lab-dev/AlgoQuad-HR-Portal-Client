@@ -60,7 +60,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
           defaultValue={defaultValue}
           ref={ref}
           disabled={isDisabled}
-          className={`w-full ${icon?"pl-[58px]":""} px-4 py-[14px] rounded-lg bg-white border-2 leading-[18px] focus:outline-none transition duration-300 
+          className={`w-full ${icon?"pl-[58px]":""} px-4 py-[14px] rounded-lg bg-white border-2 leading-[18px] focus:outline-none transition duration-300 placeholder:text-neutral-10/60 
             ${
               error
                 ? "border-red-500"

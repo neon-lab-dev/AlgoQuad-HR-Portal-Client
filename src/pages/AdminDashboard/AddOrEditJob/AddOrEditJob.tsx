@@ -331,7 +331,7 @@ type TDynamicListProps = {
   chipStyle?: "skill" | "line";
 };
 
-const DynamicList: React.FC<TDynamicListProps> = ({
+export const DynamicList: React.FC<TDynamicListProps> = ({
   label,
   placeholder,
   fields,
@@ -434,7 +434,7 @@ const DynamicList: React.FC<TDynamicListProps> = ({
 
       {/* Tag-input container */}
       <div
-        className="flex flex-wrap items-center gap-2 focus-within:border-primary-10 cursor-text px-4 py-3.5 rounded-lg bg-white border-2 border-neutral-95 focus:border-neutral-25 relative leading-[18px] focus:outline-none transition duration-300"
+        className="flex flex-wrap items-center gap-2 focus-within:border-primary-10 cursor-text px-4 py-2.5 rounded-lg bg-white border-2 border-neutral-95 focus:border-neutral-25 relative focus:outline-none transition duration-300"
         onClick={() => inputRef.current?.focus()}
       >
         {/* Existing chips */}

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CourseCard from "../CourseCard/CourseCard";
 import Loader from "../../../Shared/Loader/Loader";
-import { useGetMyCoursesQuery } from "../../../../redux/Features/Course/courseApi";
+import { useGetMyCoursesQuery } from "../../../../redux/Features/Job/jobApi";
 
 const CourseSection = () => {
   const { data: mtCourses, isLoading } = useGetMyCoursesQuery({});  // it's gte my profile api.

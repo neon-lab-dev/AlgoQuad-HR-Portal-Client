@@ -1,5 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
-// src/pages/hr/Jobs.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
@@ -23,122 +21,69 @@ import Button from "../../../components/Reusable/Button/Button";
 import Table from "../../../components/Reusable/Table/Table";
 import { formatDate } from "../../../utils/formatDate";
 import JobStatusBadge from "../../../components/Reusable/JobStatusBadge/JobStatusBadge";
-
-export const jobsMock = [
-  {
-    _id: "JOB-001",
-    title: "Senior React Developer",
-    department: "Engineering",
-    openings: 2,
-    description: "Build and maintain our core web platform.",
-    skills: ["React", "TypeScript", "Redux", "Tailwind"],
-    location: "Bengaluru, India",
-    employmentType: "Full-time",
-    status: "Active",
-    isReferralEnabled: true,
-    createdAt: "2025-09-01T10:00:00Z",
-    updatedAt: "2025-09-01T10:00:00Z",
-  },
-  {
-    _id: "JOB-002",
-    title: "UI/UX Designer",
-    department: "Design",
-    openings: 1,
-    description: "Own end-to-end design of new products.",
-    skills: ["Figma", "Design Systems", "Prototyping"],
-    location: "Remote (India)",
-    employmentType: "Full-time",
-    status: "Active",
-    isReferralEnabled: true,
-    createdAt: "2025-09-05T10:00:00Z",
-    updatedAt: "2025-09-05T10:00:00Z",
-  },
-  {
-    _id: "JOB-003",
-    title: "Backend Engineer (Node.js)",
-    department: "Engineering",
-    openings: 3,
-    description: "Design APIs and data models for the portal.",
-    skills: ["Node.js", "PostgreSQL", "REST"],
-    location: "Hybrid — Pune, India",
-    employmentType: "Full-time",
-    status: "Closed",
-    isReferralEnabled: false,
-    createdAt: "2025-08-20T10:00:00Z",
-    updatedAt: "2025-09-15T10:00:00Z",
-  },
-  {
-    _id: "JOB-004",
-    title: "QA Engineer (Intern)",
-    department: "Engineering",
-    openings: 2,
-    description: "Assist in manual and automated testing.",
-    skills: ["Manual Testing", "Jest", "Cypress"],
-    location: "On-site — Hyderabad, India",
-    employmentType: "Intern",
-    status: "Draft",
-    isReferralEnabled: false,
-    createdAt: "2025-09-18T10:00:00Z",
-    updatedAt: "2025-09-18T10:00:00Z",
-  },
-];
+import { useGetAllJobsQuery } from "../../../redux/Features/Job/jobApi";
+import type { TJob } from "../../../types/job.types";
 
 const Jobs = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
-  const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [departmentFilter, setDepartmentFilter] = useState("All");
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+  const skip = (page - 1) * limit;
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
 
-//   const { data, isLoading, isFetching } = useGetAllJobsQuery({
-//     keyword: searchValue,
-//     page,
-//     status: statusFilter,
-//     department: departmentFilter,
-//   });
+  const { data, isLoading, isFetching } = useGetAllJobsQuery({
+    keyword: searchValue,
+    skip,
+    limit,
+    status: statusFilter,
+    department: departmentFilter,
+  });
 
-//   const allJobs: TJob[] = data?.data?.jobs || [];
+  const allJobs = data?.data?.jobs || [];
+  console.log(allJobs);
 
-//   const [deleteJob] = useDeleteJobMutation();
-//   const [updateJobStatus] = useUpdateJobStatusMutation();
-//   const [toggleReferral] = useToggleReferralMutation();
+  //   const [deleteJob] = useDeleteJobMutation();
+  //   const [updateJobStatus] = useUpdateJobStatusMutation();
+  //   const [toggleReferral] = useToggleReferralMutation();
 
   // ---- Stats (top row) ----
   const stats = {
-    total: jobsMock.length || 0,
-    active: jobsMock.filter((j) => j.status === "Active").length,
-    closed: jobsMock.filter((j) => j.status === "Closed").length,
-    draft: jobsMock.filter((j) => j.status === "Draft").length,
+    total: 1,
+    active: 1,
+    closed: 0,
+    draft: 0
   };
 
   // ---- Actions ----
-//   const handleDelete = async (id: string) => {
-//     toast.promise(deleteJob(id).unwrap(), {
-//       loading: "Deleting job...",
-//       success: "Job deleted successfully.",
-//       error: (err: any) => err?.data?.message || "Something went wrong!",
-//     });
-//   };
+  //   const handleDelete = async (id: string) => {
+  //     toast.promise(deleteJob(id).unwrap(), {
+  //       loading: "Deleting job...",
+  //       success: "Job deleted successfully.",
+  //       error: (err: any) => err?.data?.message || "Something went wrong!",
+  //     });
+  //   };
 
-//   const handleStatusChange = async (id: string, status: string) => {
-//     toast.promise(updateJobStatus({ id, status }).unwrap(), {
-//       loading: `Updating to ${status}...`,
-//       success: `Job marked as ${status}.`,
-//       error: (err: any) => err?.data?.message || "Something went wrong!",
-//     });
-//   };
+  //   const handleStatusChange = async (id: string, status: string) => {
+  //     toast.promise(updateJobStatus({ id, status }).unwrap(), {
+  //       loading: `Updating to ${status}...`,
+  //       success: `Job marked as ${status}.`,
+  //       error: (err: any) => err?.data?.message || "Something went wrong!",
+  //     });
+  //   };
 
-//   const handleToggleReferral = async (id: string, enabled: boolean) => {
-//     toast.promise(toggleReferral({ id, enabled }).unwrap(), {
-//       loading: "Updating referral setting...",
-//       success: `Referrals ${enabled ? "enabled" : "disabled"}.`,
-//       error: (err: any) => err?.data?.message || "Something went wrong!",
-//     });
-//   };
+  //   const handleToggleReferral = async (id: string, enabled: boolean) => {
+  //     toast.promise(toggleReferral({ id, enabled }).unwrap(), {
+  //       loading: "Updating referral setting...",
+  //       success: `Referrals ${enabled ? "enabled" : "disabled"}.`,
+  //       error: (err: any) => err?.data?.message || "Something went wrong!",
+  //     });
+  //   };
 
   // ---- Table data ----
   const tableData =
-    jobsMock.map((job) => ({
+    allJobs?.map((job:TJob) => ({
       _id: job._id,
       title: job.title,
       department: job.department,
@@ -146,7 +91,6 @@ const Jobs = () => {
       location: job.location,
       employmentType: job.employmentType,
       status: job.status, // rendered via custom component
-      isReferralEnabled: job.isReferralEnabled,
       createdDate: formatDate(job.createdAt),
     })) || [];
 
@@ -174,7 +118,8 @@ const Jobs = () => {
     {
       icon: <FiFile />,
       label: "View Applications",
-      onClick: (row: any) => navigate(`/dashboard/admin/applications/${row._id}`),
+      onClick: (row: any) =>
+        navigate(`/dashboard/admin/applications/${row._id}`),
     },
     {
       icon: <FiEdit2 />,
@@ -185,7 +130,7 @@ const Jobs = () => {
     {
       icon: <FiCheckCircle />,
       label: "Activate",
-    //   onClick: (row: any) => handleStatusChange(row._id, "Active"),
+      //   onClick: (row: any) => handleStatusChange(row._id, "Active"),
       onClick: () => {},
       className: "text-green-600",
       hidden: (row: any) => row.status === "Active",
@@ -193,7 +138,7 @@ const Jobs = () => {
     {
       icon: <FiXCircle />,
       label: "Close",
-    //   onClick: (row: any) => handleStatusChange(row._id, "Closed"),
+      //   onClick: (row: any) => handleStatusChange(row._id, "Closed"),
       onClick: () => {},
       className: "text-orange-600",
       hidden: (row: any) => row.status === "Closed",
@@ -201,7 +146,7 @@ const Jobs = () => {
     {
       icon: <FiTrash2 />,
       label: "Delete",
-    //   onClick: (row: any) => handleDelete(row._id),
+      //   onClick: (row: any) => handleDelete(row._id),
       onClick: () => {},
       className: "text-red-600",
     },
@@ -209,9 +154,9 @@ const Jobs = () => {
 
   // ---- Export ----
   const handleExport = () => {
-    if (!jobsMock.length) return;
+    if (!allJobs?.length) return;
     const exportColumns = columns.filter((c) => c.key !== "status");
-    const exportData = jobsMock.map((job: any) => {
+    const exportData = allJobs?.map((job: any) => {
       const row: Record<string, any> = {};
       exportColumns.forEach((col) => {
         row[col.label] = job[col.key] ?? "";
@@ -301,7 +246,7 @@ const Jobs = () => {
                     }}
                     className="py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary-10 focus:outline-none px-3 text-sm text-neutral-40 outline-none cursor-pointer"
                   >
-                    <option value="All">All Status</option>
+                    <option value="all">All Status</option>
                     <option value="Draft">Draft</option>
                     <option value="Active">Active</option>
                     <option value="Closed">Closed</option>
@@ -317,7 +262,7 @@ const Jobs = () => {
                     }}
                     className="py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary-10 focus:outline-none px-3 text-sm text-neutral-40 outline-none cursor-pointer"
                   >
-                    <option value="All">All Departments</option>
+                    <option value="all">All Departments</option>
                     <option value="Engineering">Engineering</option>
                     <option value="Design">Design</option>
                     <option value="Marketing">Marketing</option>
@@ -346,7 +291,7 @@ const Jobs = () => {
               data={tableData}
               actions={actions}
               rowKey="_id"
-            //   isLoading={isLoading || isFetching}
+              //   isLoading={isLoading || isFetching}
               page={page}
               onPageChange={setPage}
               totalPages={1}

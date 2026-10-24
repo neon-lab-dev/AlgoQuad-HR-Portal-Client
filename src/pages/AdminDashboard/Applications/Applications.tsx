@@ -519,7 +519,7 @@ const Applications = () => {
                   />
                   <Button
                     variant="primary"
-                    onClick={() => navigate("/hr/candidates/create")}
+                    onClick={() => navigate("/dashboard/admin/candidate/add")}
                     label="+ Add Candidate"
                     classNames="w-fit py-2 px-4 border-2 border-primary-10"
                   />
