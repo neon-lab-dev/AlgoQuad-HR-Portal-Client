@@ -42,7 +42,6 @@ const Jobs = () => {
   });
 
   const allJobs = data?.data?.jobs || [];
-  console.log(allJobs);
 
   //   const [deleteJob] = useDeleteJobMutation();
   //   const [updateJobStatus] = useUpdateJobStatusMutation();

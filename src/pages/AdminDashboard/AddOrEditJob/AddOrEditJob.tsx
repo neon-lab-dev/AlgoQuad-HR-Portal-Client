@@ -11,31 +11,32 @@ import TextInput from "../../../components/Reusable/TextInput/TextInput";
 import TextArea from "../../../components/Reusable/TextArea/TextArea";
 import SelectDropdown from "../../../components/Reusable/SelectDropdown/SelectDropdown";
 import Button from "../../../components/Reusable/Button/Button";
+import {
+  useGetSingleJobByIdQuery,
+  usePostJobMutation,
+  useUpdateJobMutation,
+} from "../../../redux/Features/Job/jobApi";
 
+// ---- Options ----
 const DEPARTMENT_OPTIONS = [
   "Development",
-  "Sales",
-  "Customer Support",
-  "Product Management",
-  "Quality Assurance",
-  "Content Writing",
-  "Customer Service",
-  "IT",
-  "Business Development",
-  "Marketing",
   "Engineering",
   "Design",
+  "Product Management",
+  "Quality Assurance",
+  "IT",
+  "Sales",
+  "Business Development",
   "Marketing",
+  "Content Writing",
+  "Customer Support",
+  "Customer Service",
   "HR",
   "Finance",
   "Operations",
 ];
 
-const EMPLOYMENT_TYPE_OPTIONS = [
-  "Full-time",
-  "Part-time",
-  "Contract",
-];
+const EMPLOYMENT_TYPE_OPTIONS = ["Full-time", "Part-time", "Contract"];
 
 const STATUS_OPTIONS = ["Draft", "Active", "Closed", "Inactive"];
 
@@ -60,45 +61,29 @@ const EMPTY: TJobFormValues = {
   employmentType: "",
   status: "Draft",
   description: "",
-  skills: [],
-  responsibilities: [],
-  qualifications: [],
+  skills: [""],
+  responsibilities: [""],
+  qualifications: [""],
 };
-
-// ---- Mock: replace with useGetJobByIdQuery later ----
-const jobsMock = [
-  {
-    _id: "JOB-001",
-    title: "Senior React Developer",
-    department: "Engineering",
-    openings: 2,
-    location: "Dhaka, Bangladesh",
-    employmentType: "Full-time",
-    status: "Active",
-    description: "Build and maintain our core web platform.",
-    skills: ["React", "TypeScript", "Redux", "Tailwind"],
-    responsibilities: [
-      "Design and build reusable React components",
-      "Collaborate with backend to shape APIs",
-    ],
-    qualifications: [
-      "5+ years of front-end experience",
-      "Strong TypeScript knowledge",
-    ],
-  },
-  // ...other jobs
-];
 
 const AddOrEditJob = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
 
-  // Replace with: const { data: jobData } = useGetJobByIdQuery(id!, { skip: !id })
-  const initialData = isEdit
-    ? (jobsMock.find((j) => j._id === id) ?? null)
-    : null;
+  // ---- Fetch single job (edit mode only) ----
+  const { data: jobData, isLoading: isLoadingJob } = useGetSingleJobByIdQuery(
+    id as string,
+    { skip: !isEdit }
+  );
+  const job = jobData?.data;
 
+  // ---- Mutations ----
+  const [postJob, { isLoading: isCreating }] = usePostJobMutation();
+  const [updateJob, { isLoading: isUpdating }] = useUpdateJobMutation();
+  const isSubmitting = isCreating || isUpdating;
+
+  // ---- Form ----
   const {
     register,
     handleSubmit,
@@ -106,7 +91,7 @@ const AddOrEditJob = () => {
     watch,
     control,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<TJobFormValues>({ defaultValues: EMPTY });
 
   const skillsArray = useFieldArray({ control, name: "skills" as never });
@@ -116,32 +101,77 @@ const AddOrEditJob = () => {
   });
   const qualArray = useFieldArray({ control, name: "qualifications" as never });
 
-  // ---- Prefill in edit mode ----
+  // ---- Set default values ----
   useEffect(() => {
-    if (isEdit && initialData) {
-      reset({ ...EMPTY, ...(initialData as any) });
-    } else {
+    if (!isEdit) {
       reset(EMPTY);
+      return;
     }
-  }, [isEdit, initialData, reset]);
+    if (job) {
+      reset({
+        title: job.title ?? "",
+        department: job.department ?? "",
+        openings: job.openings ?? 1,
+        location: job.location ?? "",
+        employmentType: job.employmentType ?? "",
+        status: job.status ?? "Draft",
+        description: job.description ?? "",
+        skills: job.skills?.length ? job.skills : [""],
+        responsibilities: job.responsibilities?.length
+          ? job.responsibilities
+          : [""],
+        qualifications: job.qualifications?.length
+          ? job.qualifications
+          : [""],
+      });
+    }
+  }, [isEdit, job, reset]);
 
+  // ---- Submit ----
   const handleFormSubmit = async (data: TJobFormValues) => {
-    console.log(data);
+    const cleaned = {
+      title: data.title.trim(),
+      department: data.department,
+      openings: Number(data.openings) || 1,
+      location: data.location.trim(),
+      employmentType: data.employmentType,
+      status: data.status,
+      description: data.description.trim(),
+      skills: (data.skills || []).map((s) => s.trim()).filter(Boolean),
+      responsibilities: (data.responsibilities || [])
+        .map((s) => s.trim())
+        .filter(Boolean),
+      qualifications: (data.qualifications || [])
+        .map((s) => s.trim())
+        .filter(Boolean),
+    };
 
-    // Replace with real mutation:
-    // if (isEdit) await updateJob({ id, ...cleaned }).unwrap();
-    // else await createJob(cleaned).unwrap();
-
-    await new Promise((r) => setTimeout(r, 500)); // simulate network
-    toast.success(
-      isEdit ? "Job updated successfully." : "Job created successfully.",
-    );
-    navigate("/hr/jobs");
+    try {
+      if (isEdit && id) {
+        await updateJob({ id, data:cleaned }).unwrap();
+        toast.success("Job updated successfully.");
+      } else {
+        await postJob(cleaned).unwrap();
+        toast.success("Job created successfully.");
+      }
+      navigate("/dashboard/admin/jobs");
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Something went wrong.");
+    }
   };
+
+  // ---- Loading state for edit ----
+  if (isEdit && isLoadingJob) {
+    return (
+      <div className="font-Montserrat flex items-center justify-center py-20 text-neutral-65 text-sm">
+        Loading job details…
+      </div>
+    );
+  }
 
   return (
     <div className="font-Montserrat">
-      {/* ---- Back + heading ---- */}
+      {/* ---- Back ---- */}
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => navigate(-1)}
@@ -168,7 +198,7 @@ const AddOrEditJob = () => {
           onSubmit={handleSubmit(handleFormSubmit)}
           className="flex flex-col gap-5"
         >
-          {/* ---------- Row: Title + Department ---------- */}
+          {/* ---------- Row: Title + Department + Openings + Location + Type + Status ---------- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput
               label="Job Title"
@@ -186,7 +216,6 @@ const AddOrEditJob = () => {
               error={errors.department}
               options={DEPARTMENT_OPTIONS}
             />
-          
 
             <TextInput
               label="Number of Openings"
@@ -202,7 +231,7 @@ const AddOrEditJob = () => {
 
             <TextInput
               label="Location"
-              placeholder="e.g. Dhaka, Bangladesh / Remote"
+              placeholder="e.g. Bengaluru, India / Remote"
               error={errors.location}
               isRequired
               {...register("location", { required: "Location is required" })}
@@ -223,7 +252,7 @@ const AddOrEditJob = () => {
               error={errors.status}
               options={STATUS_OPTIONS}
             />
-            </div>
+          </div>
 
           {/* ---------- Job Description ---------- */}
           <TextArea
@@ -237,7 +266,6 @@ const AddOrEditJob = () => {
           />
 
           {/* ---------- Required Skills ---------- */}
-          {/* ---------- Required Skills ---------- */}
           <DynamicList
             label="Required Skills"
             placeholder="Type a skill and press Enter…"
@@ -250,7 +278,7 @@ const AddOrEditJob = () => {
             setValue={setValue}
             error={errors.skills as any}
             isRequired
-            chipStyle="skill" // ← pill style for skills
+            chipStyle="skill"
           />
 
           {/* ---------- Responsibilities ---------- */}
@@ -266,7 +294,7 @@ const AddOrEditJob = () => {
             setValue={setValue}
             error={errors.responsibilities as any}
             isRequired
-            chipStyle="line" // ← rectangular chips for longer text
+            chipStyle="line"
           />
 
           {/* ---------- Qualifications ---------- */}
@@ -310,11 +338,9 @@ const AddOrEditJob = () => {
 
 export default AddOrEditJob;
 
-/*
- * DynamicList — reusable for skills / responsibilities / qualifications
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+/* ============================================================
+ * DynamicList — tag input for skills / responsibilities / quals
+ * ============================================================ */
 type TDynamicListProps = {
   label: string;
   placeholder: string;
@@ -327,7 +353,6 @@ type TDynamicListProps = {
   setValue: any;
   error?: any;
   isRequired?: boolean;
-  /** If true, chips are rounded/tinted (best for skills). Default false → rectangular neutral chips. */
   chipStyle?: "skill" | "line";
 };
 
@@ -348,19 +373,14 @@ export const DynamicList: React.FC<TDynamicListProps> = ({
   const [draft, setDraft] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Register a hidden field per row so react-hook-form validation still works.
-  // We use register on a hidden input for each array item + setValue to write chips.
   useEffect(() => {
-    // Ensure at least one row exists so RHF tracks the array
     if (fields.length === 0) onAdd();
   }, [fields.length, onAdd]);
 
-  // Keep the RHF array and the chip list in sync
   const commitDraft = () => {
     const raw = draft.trim();
     if (!raw) return;
 
-    // Split on commas so "React, Vue" creates two chips
     const parts = raw
       .split(",")
       .map((s) => s.trim())
@@ -374,16 +394,14 @@ export const DynamicList: React.FC<TDynamicListProps> = ({
 
     parts.forEach((part, i) => {
       const idx = lastIndex + i;
-      if (i > 0) onAdd(); // add an extra row for each additional part
+      if (i > 0) onAdd();
       setValue(`${name}.${idx}` as any, part, {
         shouldDirty: true,
         shouldValidate: true,
       });
     });
 
-    // Add a fresh empty row so the user can keep typing
     onAdd();
-
     setDraft("");
     inputRef.current?.focus();
   };
@@ -396,7 +414,6 @@ export const DynamicList: React.FC<TDynamicListProps> = ({
     }
 
     if (e.key === "Backspace" && draft === "") {
-      // Remove last non-empty chip if input is empty
       const filledIndexes = values
         .map((v, i) => (v?.trim() ? i : -1))
         .filter((i) => i !== -1);
@@ -410,34 +427,26 @@ export const DynamicList: React.FC<TDynamicListProps> = ({
       shouldDirty: true,
       shouldValidate: true,
     });
-    // If it's the last row and it's now empty, keep it (as the "typing" row)
   };
 
-  // Only render chips for non-empty values
   const chips = values
     .map((v, i) => ({ value: (v || "").trim(), index: i }))
     .filter((c) => c.value !== "");
 
-  // Total count of committed chips
-  const totalCount = chips.length;
-
   return (
     <div>
-      {/* Label + count */}
       <div className="flex items-center justify-between mb-2">
         <label className="block text-sm text-neutral-40">
           {label}
           {isRequired && <span className="text-red-500 ml-1">*</span>}
         </label>
-        <span className="text-xs text-neutral-65">{totalCount} added</span>
+        <span className="text-xs text-neutral-65">{chips.length} added</span>
       </div>
 
-      {/* Tag-input container */}
       <div
         className="flex flex-wrap items-center gap-2 focus-within:border-primary-10 cursor-text px-4 py-2.5 rounded-lg bg-white border-2 border-neutral-95 focus:border-neutral-25 relative focus:outline-none transition duration-300"
         onClick={() => inputRef.current?.focus()}
       >
-        {/* Existing chips */}
         {chips.map((c) => (
           <span
             key={c.index}
@@ -462,7 +471,6 @@ export const DynamicList: React.FC<TDynamicListProps> = ({
           </span>
         ))}
 
-        {/* The typing input */}
         <input
           ref={inputRef}
           type="text"
@@ -474,7 +482,6 @@ export const DynamicList: React.FC<TDynamicListProps> = ({
           className="flex-1 min-w-[120px] bg-transparent text-sm text-neutral-40 placeholder:text-neutral-65 outline-none py-1"
         />
 
-        {/* Hidden inputs so RHF knows about every item (keeps validation happy) */}
         {fields.map((field, idx) => (
           <input
             key={field.id}
@@ -484,7 +491,6 @@ export const DynamicList: React.FC<TDynamicListProps> = ({
         ))}
       </div>
 
-      {/* Hint */}
       <p className="text-[11px] text-neutral-65 mt-1.5">
         Press{" "}
         <kbd className="px-1 py-0.5 rounded border border-neutral-98 bg-neutral-105 text-[10px]">
@@ -497,7 +503,6 @@ export const DynamicList: React.FC<TDynamicListProps> = ({
         to add. Backspace removes the last item.
       </p>
 
-      {/* Error */}
       {error && (
         <p className="text-xs text-red-500 mt-1">
           {Array.isArray(error)

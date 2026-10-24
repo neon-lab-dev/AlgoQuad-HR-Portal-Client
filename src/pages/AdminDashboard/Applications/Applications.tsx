@@ -22,8 +22,8 @@ import Button from "../../../components/Reusable/Button/Button";
 import Table from "../../../components/Reusable/Table/Table";
 import CandidateStatusBadge from "../../../components/Reusable/CandidateStatusBadge/CandidateStatusBadge";
 import { formatDate } from "../../../utils/formatDate";
-import { jobsMock } from "../Jobs/Jobs";
 import ChangeApplicationStatusModal from "../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
+import { useGetAllJobsQuery } from "../../../redux/Features/Job/jobApi";
 
 const STATUS_OPTIONS = [
   "New",
@@ -228,6 +228,12 @@ const Applications = () => {
   const [page, setPage] = useState(1);
   const [jobFilter, setJobFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+
+  const { data } = useGetAllJobsQuery({
+      skip : 0,
+      limit : 10000,
+    });
+    const allJobs = data?.data?.jobs || [];
 
   // ---- Status-change modal state ----
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] =
@@ -487,9 +493,9 @@ const Applications = () => {
                     className="py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary-10 focus:outline-none px-3 text-sm text-neutral-40 outline-none cursor-pointer"
                   >
                     <option value="All">All Jobs</option>
-                    {jobsMock.map((j: any) => (
-                      <option key={j._id} value={j._id}>
-                        {j.title}
+                    {allJobs?.map((job: any) => (
+                      <option key={job?._id} value={job?._id}>
+                        {job?.title}
                       </option>
                     ))}
                   </select>
