@@ -39,15 +39,98 @@ const jobsMock = [
       "Strong TypeScript knowledge",
       "Experience with design systems",
     ],
-    location: "Dhaka, Bangladesh",
+    location: "Bengaluru, India",
     employmentType: "Full-time",
     status: "Active",
     isReferralEnabled: true,
-    createdBy: "Sadia Islam",
+    createdBy: "Priya Menon",
     createdAt: "2025-09-01T10:00:00Z",
     updatedAt: "2025-09-10T14:00:00Z",
   },
-  // ... other jobs
+
+  {
+    _id: "JOB-002",
+    title: "UI/UX Designer",
+    department: "Design",
+    openings: 1,
+    description:
+      "Own the end-to-end design of our new products, from user research and wireframes to polished, production-ready UI. You will partner closely with engineering and product to ship a consistent, delightful experience.",
+    responsibilities: [
+      "Run user research and usability tests",
+      "Create wireframes, prototypes, and final UI",
+      "Maintain and evolve our design system",
+      "Collaborate with engineering on implementation",
+    ],
+    skills: ["Figma", "Design Systems", "Prototyping", "User Research"],
+    qualifications: [
+      "3+ years of product design experience",
+      "Strong portfolio of shipped work",
+      "Comfortable in a fast-paced product team",
+    ],
+    location: "Remote (India)",
+    employmentType: "Full-time",
+    status: "Active",
+    isReferralEnabled: true,
+    createdBy: "Priya Menon",
+    createdAt: "2025-09-05T10:00:00Z",
+    updatedAt: "2025-09-05T10:00:00Z",
+  },
+
+  {
+    _id: "JOB-003",
+    title: "Backend Engineer (Node.js)",
+    department: "Engineering",
+    openings: 3,
+    description:
+      "Design and build the APIs and data models that power our recruitment portal. You will own backend services end-to-end, from schema design to deployment and monitoring.",
+    responsibilities: [
+      "Design REST/GraphQL APIs and data models",
+      "Write clean, testable Node.js services",
+      "Own database schema and migrations",
+      "Monitor and improve API performance",
+    ],
+    skills: ["Node.js", "PostgreSQL", "REST", "Docker", "AWS"],
+    qualifications: [
+      "4+ years of backend experience",
+      "Strong SQL and schema design skills",
+      "Experience deploying to cloud environments",
+    ],
+    location: "Hybrid — Pune, India",
+    employmentType: "Full-time",
+    status: "Closed",
+    isReferralEnabled: false,
+    createdBy: "Priya Menon",
+    createdAt: "2025-08-20T10:00:00Z",
+    updatedAt: "2025-09-15T10:00:00Z",
+  },
+
+  {
+    _id: "JOB-004",
+    title: "QA Engineer (Intern)",
+    department: "Engineering",
+    openings: 2,
+    description:
+      "Kick-start your QA career by helping us keep the portal reliable. You will work alongside senior QA engineers to write and run manual and automated tests for new features.",
+    responsibilities: [
+      "Write and execute manual test cases",
+      "Automate regression tests with Jest/Cypress",
+      "Report and track bugs",
+      "Collaborate with engineers on fixes",
+    ],
+    skills: ["Manual Testing", "Jest", "Cypress"],
+    qualifications: [
+      "Final-year student or recent graduate",
+      "Basic knowledge of testing concepts",
+      "Strong attention to detail",
+    ],
+    location: "On-site — Hyderabad, India",
+    employmentType: "Intern",
+    status: "Draft",
+    isReferralEnabled: false,
+    createdBy: "Priya Menon",
+    createdAt: "2025-09-18T10:00:00Z",
+    updatedAt: "2025-09-18T10:00:00Z",
+  },
 ];
 
 const candidatesForJobMock = [
