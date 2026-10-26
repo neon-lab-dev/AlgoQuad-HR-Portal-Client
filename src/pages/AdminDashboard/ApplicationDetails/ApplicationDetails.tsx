@@ -26,6 +26,7 @@ import { formatDate } from "../../../utils/formatDate";
 import ChangeRatingModal from "../../../components/AdminDashboard/ApplicationDetailsPage/ChangeRatingModal/ChangeRatingModal";
 import ChangeApplicationStatusModal from "../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
 import { useGetSingleApplicationByIdQuery } from "../../../redux/Features/Application/applicationApi";
+import Loader from "../../../components/Shared/Loader/Loader";
 
 const statusMeta: Record<
   string,
@@ -55,7 +56,7 @@ const ApplicationDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data } = useGetSingleApplicationByIdQuery(id!);
+  const { data, isLoading } = useGetSingleApplicationByIdQuery(id!);
   const application = data?.data || {};
 
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
@@ -77,6 +78,14 @@ const ApplicationDetails = () => {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+
+    if (isLoading)
+        return (
+          <div className="h-[70vh] flex items-center justify-center">
+            <Loader />
+          </div>
+        );
 
   return (
     <div className="font-Montserrat">

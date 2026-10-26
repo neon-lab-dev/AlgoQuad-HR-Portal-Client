@@ -8,7 +8,7 @@ const adminApi = baseApi.injectEndpoints({
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["course"],
+      providesTags: ["jobs"],
     }),
   }),
 });

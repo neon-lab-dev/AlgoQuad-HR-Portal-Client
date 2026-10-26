@@ -56,11 +56,7 @@ const Login = () => {
       if (response?.success) {
         dispatch(setUser({ user, token: response?.data?.accessToken }));
         toast.success(response?.message);
-        if (userRole === "admin") {
-          navigate("/dashboard/admin");
-        } else {
-          navigate("/");
-        }
+        navigate("/dashboard/admin");
       }
     } catch (err: any) {
       toast.error(err?.data?.message || "Something went wrong!");

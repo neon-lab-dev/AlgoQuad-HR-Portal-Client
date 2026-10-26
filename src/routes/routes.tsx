@@ -75,13 +75,13 @@ export const router = createBrowserRouter([
         element: <ApplicationDetails />,
       },
       {
-        path: "candidate/add",
+        path: "candidate/add/:jobId",
         element: <AddOrEditCandidate />,
       },
-      {
-        path: "candidate/edit/:id",
-        element: <AddOrEditCandidate />,
-      },
+      // {
+      //   path: "candidate/edit/:id",
+      //   element: <AddOrEditCandidate />,
+      // },
     ],
   },
   {

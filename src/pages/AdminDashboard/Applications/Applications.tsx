@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
@@ -21,7 +21,6 @@ import Table from "../../../components/Reusable/Table/Table";
 import CandidateStatusBadge from "../../../components/Reusable/CandidateStatusBadge/CandidateStatusBadge";
 import { formatDate } from "../../../utils/formatDate";
 import ChangeApplicationStatusModal from "../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
-import { useGetAllJobsQuery } from "../../../redux/Features/Job/jobApi";
 import { useGetAllApplicationsQuery } from "../../../redux/Features/Application/applicationApi";
 import type { TApplication } from "../../../types/application.types";
 
@@ -34,193 +33,8 @@ const STATUS_OPTIONS = [
   "Hired",
 ];
 
-const candidatesMock = [
-  {
-    _id: "CAND-001",
-    name: "Mrinali Roy ",
-    email: "mrinali.roy@example.com",
-    phone: "+91 98765 43201",
-    jobId: "JOB-001",
-    jobTitle: "Senior React Developer",
-    department: "Engineering",
-    experience: 5,
-    resumeUrl: "/mock/resumes/ayesha.pdf",
-    resumeFileName: "Ayesha_Rahman_CV.pdf",
-    source: "HR",
-    rating: 8,
-    status: "Interview",
-    statusHistory: [
-      {
-        status: "New",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-10T09:00:00Z",
-      },
-      {
-        status: "Screening",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-12T10:00:00Z",
-      },
-      {
-        status: "Interview",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-15T14:00:00Z",
-      },
-    ],
-    createdAt: "2025-09-10T09:00:00Z",
-    updatedAt: "2025-09-15T14:00:00Z",
-  },
-  {
-    _id: "CAND-002",
-    name: "Rohan Mehta",
-    email: "rohan.mehta@example.com",
-    phone: "+91 98765 43202",
-    jobId: "JOB-002",
-    jobTitle: "UI/UX Designer",
-    department: "Design",
-    experience: 3,
-    resumeUrl: "/mock/resumes/rohan.pdf",
-    resumeFileName: "Rohan_Mehta_CV.pdf",
-    source: "Referral",
-    referredBy: "Arjun Sharma",
-    rating: 6,
-    status: "Screening",
-    statusHistory: [
-      {
-        status: "New",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-12T11:00:00Z",
-      },
-      {
-        status: "Screening",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-13T09:00:00Z",
-      },
-    ],
-    createdAt: "2025-09-12T11:00:00Z",
-    updatedAt: "2025-09-13T09:00:00Z",
-  },
-  {
-    _id: "CAND-003",
-    name: "Sneha Iyer",
-    email: "sneha.iyer@example.com",
-    phone: "+91 98765 43203",
-    jobId: "JOB-001",
-    jobTitle: "Senior React Developer",
-    department: "Engineering",
-    experience: 7,
-    resumeUrl: "/mock/resumes/sneha.pdf",
-    resumeFileName: "Sneha_Iyer_CV.pdf",
-    source: "HR",
-    rating: 9,
-    status: "Selected",
-    statusHistory: [
-      {
-        status: "New",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-08T08:00:00Z",
-      },
-      {
-        status: "Screening",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-09T10:00:00Z",
-      },
-      {
-        status: "Interview",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-12T13:00:00Z",
-      },
-      {
-        status: "Selected",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-18T16:30:00Z",
-      },
-    ],
-    createdAt: "2025-09-08T08:00:00Z",
-    updatedAt: "2025-09-18T16:30:00Z",
-  },
-  {
-    _id: "CAND-004",
-    name: "Vikram Nair",
-    email: "vikram.nair@example.com",
-    phone: "+91 98765 43204",
-    jobId: "JOB-003",
-    jobTitle: "Backend Engineer (Node.js)",
-    department: "Engineering",
-    experience: 4,
-    resumeUrl: "/mock/resumes/vikram.pdf",
-    resumeFileName: "Vikram_Nair_CV.pdf",
-    source: "Referral",
-    referredBy: "Arjun Sharma",
-    rating: 5,
-    status: "Rejected",
-    statusHistory: [
-      {
-        status: "New",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-05T09:00:00Z",
-      },
-      {
-        status: "Screening",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-06T10:00:00Z",
-      },
-      {
-        status: "Rejected",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-09T12:00:00Z",
-        note: "Not enough backend depth",
-      },
-    ],
-    createdAt: "2025-09-05T09:00:00Z",
-    updatedAt: "2025-09-09T12:00:00Z",
-  },
-  {
-    _id: "CAND-005",
-    name: "Aditya Kulkarni",
-    email: "aditya.kulkarni@example.com",
-    phone: "+91 98765 43205",
-    jobId: "JOB-001",
-    jobTitle: "Senior React Developer",
-    department: "Engineering",
-    experience: 6,
-    resumeUrl: "/mock/resumes/aditya.pdf",
-    resumeFileName: "Aditya_Kulkarni_CV.pdf",
-    source: "HR",
-    rating: 7,
-    status: "Hired",
-    statusHistory: [
-      {
-        status: "New",
-        changedBy: "Priya Menon",
-        changedAt: "2025-08-28T09:00:00Z",
-      },
-      {
-        status: "Screening",
-        changedBy: "Priya Menon",
-        changedAt: "2025-08-30T10:00:00Z",
-      },
-      {
-        status: "Interview",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-03T14:00:00Z",
-      },
-      {
-        status: "Selected",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-07T11:00:00Z",
-      },
-      {
-        status: "Hired",
-        changedBy: "Priya Menon",
-        changedAt: "2025-09-15T09:00:00Z",
-      },
-    ],
-    createdAt: "2025-08-28T09:00:00Z",
-    updatedAt: "2025-09-15T09:00:00Z",
-  },
-];
-
 const Applications = () => {
+  const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
 
   // ---- Filter state ----
@@ -228,7 +42,6 @@ const Applications = () => {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const skip = (page - 1) * limit;
-  const [jobFilter, setJobFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedApplicationId, setSelectedApplicationId] = useState<string>("");
 
@@ -240,11 +53,11 @@ const Applications = () => {
   });
   const allApplications = applications?.data?.applications || [];
 
-  const { data } = useGetAllJobsQuery({
-    skip: 0,
-    limit: 10000,
-  });
-  const allJobs = data?.data?.jobs || [];
+  // const { data } = useGetAllJobsQuery({
+  //   skip: 0,
+  //   limit: 10000,
+  // });
+  // const allJobs = data?.data?.jobs || [];
 
   // ---- Status-change modal state ----
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] =
@@ -347,18 +160,16 @@ const Applications = () => {
 
   // ---- Export ----
   const handleExport = () => {
-    if (!candidatesMock.length) return;
-    const exportData = candidatesMock.map((c) => ({
+    if (!allApplications?.length) return;
+    const exportData = allApplications?.map((c:TApplication) => ({
       ID: c._id,
       Name: c.name,
       Email: c.email,
-      Phone: c.phone,
-      "Applied For": c.jobTitle,
-      Department: c.department,
+      Phone: c.phoneNumber,
+      "Applied For": c?.jobId?.title,
       Experience: c.experience,
       Source: c.source,
-      "Referred By": c.referredBy || "",
-      Rating: c.rating ?? "",
+      Rating: c.resumeRating ?? "",
       Status: c.status,
       "Applied Date": formatDate(c.createdAt),
     }));
@@ -456,7 +267,7 @@ const Applications = () => {
                   />
 
                   {/* Job filter (§3.6) */}
-                  <select
+                  {/* <select
                     value={jobFilter}
                     onChange={(e) => {
                       setJobFilter(e.target.value);
@@ -470,7 +281,7 @@ const Applications = () => {
                         {job?.title}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
 
                   {/* Status filter (§3.6) */}
                   <select
@@ -497,7 +308,7 @@ const Applications = () => {
                   />
                   <Button
                     variant="primary"
-                    onClick={() => navigate("/dashboard/admin/candidate/add")}
+                    onClick={() => navigate(`/dashboard/admin/candidate/add/${jobId}`)}
                     label="+ Add Candidate"
                     classNames="w-fit py-2 px-4 border-2 border-primary-10"
                   />
@@ -514,7 +325,9 @@ const Applications = () => {
               //   isLoading={isLoading || isFetching}
               page={page}
               onPageChange={setPage}
-              totalPages={1}
+              totalPages={applications?.data?.meta?.totalPages || 1}
+              limit={limit}
+              setLimit={setLimit}
             />
           </div>
         </DashboardContainer>

@@ -70,6 +70,16 @@ const applicationApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["application", "jobs"],
     }),
+
+    addCandidate: builder.mutation<any, any>({
+      query: (data) => ({
+        url: `/application/add-candidate`,
+        method: "POST",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["application", "jobs"],
+    }),
   }),
 });
 
@@ -78,4 +88,5 @@ export const {
   useGetSingleApplicationByIdQuery,
   useDeleteJobMutation,
   useUpdateApplicationMutation,
+  useAddCandidateMutation,
 } = applicationApi;

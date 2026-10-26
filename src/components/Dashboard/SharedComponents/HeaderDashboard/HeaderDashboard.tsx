@@ -16,7 +16,7 @@ const HeaderDashboard = () => {
       month: "long",
       day: "numeric",
       year: "numeric",
-    })
+    }),
   );
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const HeaderDashboard = () => {
           month: "long",
           day: "numeric",
           year: "numeric",
-        })
+        }),
       );
     }, 1000 * 60);
 
@@ -38,20 +38,10 @@ const HeaderDashboard = () => {
     <div className="bg-white p-6 border-b border-b-neutral-98 text-3xl flex justify-between items-center pr-4 sticky top-0 z-20 font-Montserrat">
       <DashboardHamburgerMenu />
       <div className="text-neutral-20 space-y-1 hidden xl:flex flex-col">
-        <h2 className="font-medium text-2xl">Good Morning, HR</h2>
+        <h2 className="font-medium text-2xl">Good Morning, {user?.name}</h2>
         <span className="text-[13px]">{currentDate}</span>
       </div>
       <ul className="flex gap-5">
-        {user?.role !== "hr" && (
-          <li className="relative">
-            <Link to="/cart">
-              <img src={ICONS.cartPlus} className="size-6" />
-            </Link>
-            <div className="size-4 rounded-full bg-blue-10 text-white flex items-center justify-center text-xs absolute -top-2 -right-2">
-              {1}
-            </div>
-          </li>
-        )}
         <li>
           <Link to="/dashboard">
             <img src={ICONS.user} className="size-6" />

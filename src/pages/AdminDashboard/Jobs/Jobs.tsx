@@ -291,9 +291,9 @@ const Jobs = () => {
               isLoading={isLoading || isFetching}
               page={page}
               onPageChange={setPage}
-              totalPages={data?.data?.meta?.totalPages || 1} // <-- Use real pagination from API
-              limit={limit} // <-- Pass down
-              setLimit={setLimit} // <-- Pass down
+              totalPages={data?.data?.meta?.totalPages || 1}
+              limit={limit}
+              setLimit={setLimit}
             />
           </div>
         </DashboardContainer>
