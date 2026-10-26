@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {  useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
@@ -16,21 +15,37 @@ import DashboardContainer from "../../../components/Dashboard/SharedComponents/D
 import Button from "../../../components/Reusable/Button/Button";
 import JobStatusBadge from "../../../components/Reusable/JobStatusBadge/JobStatusBadge";
 import { formatDate } from "../../../utils/formatDate";
-import { useGetSingleJobByIdQuery } from "../../../redux/Features/Job/jobApi";
+import {
+  useGetSingleJobByIdQuery,
+  useUpdateJobMutation,
+} from "../../../redux/Features/Job/jobApi";
+import Loader from "../../../components/Shared/Loader/Loader";
 
 const JobDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data } = useGetSingleJobByIdQuery(id!);
+  const { data, isLoading } = useGetSingleJobByIdQuery(id!);
   const job = data?.data || {};
 
-  const [status, setStatus] = useState(job.status);
+  const [updateJob] = useUpdateJobMutation();
 
-  // ---- Handlers ----
-  const handleStatusChange = (next: string) => {
-    setStatus(next);
-    toast.success(`Job marked as ${next}.`);
+  const handleStatusChange = async (status: string) => {
+    const data = {
+      status,
+    };
+    toast.promise(updateJob({ id, data }).unwrap(), {
+      loading: `Updating to ${status}...`,
+      success: `Job marked as ${status}.`,
+      error: (err: any) => err?.data?.message || "Something went wrong!",
+    });
   };
+
+  if (isLoading)
+    return (
+      <div className="h-[70vh] flex items-center justify-center">
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="font-Montserrat">
@@ -57,7 +72,7 @@ const JobDetails = () => {
             label="Edit Job"
             classNames="py-2 px-3"
           />
-          {status !== "Active" && (
+          {job?.status !== "Active" && (
             <Button
               variant="primary"
               onClick={() => handleStatusChange("Active")}
@@ -65,7 +80,7 @@ const JobDetails = () => {
               classNames="py-2 px-3 border-2 border-primary-10"
             />
           )}
-          {status === "Active" && (
+          {job?.status === "Active" && (
             <Button
               variant="primary"
               onClick={() => handleStatusChange("Closed")}
@@ -117,7 +132,6 @@ const JobDetails = () => {
               </span>
             </div>
           </div>
-
         </div>
 
         {/* Divider */}
@@ -140,7 +154,7 @@ const JobDetails = () => {
               Required Skills
             </h3>
             <div className="flex flex-wrap gap-2">
-              {job?.skills?.map((s:string) => (
+              {job?.skills?.map((s: string) => (
                 <span
                   key={s}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-105 text-neutral-40 border border-neutral-98 hover:border-primary-10 hover:text-primary-10 transition-colors cursor-default"
@@ -157,7 +171,7 @@ const JobDetails = () => {
                 Responsibilities
               </h3>
               <ul className="flex flex-col gap-2">
-                {job.responsibilities.map((r:string, i:number) => (
+                {job.responsibilities.map((r: string, i: number) => (
                   <li
                     key={i}
                     className="flex items-start gap-2 text-sm text-neutral-65"
@@ -176,7 +190,7 @@ const JobDetails = () => {
                 Qualifications
               </h3>
               <ul className="flex flex-col gap-2">
-                {job.qualifications.map((q:string, i:number) => (
+                {job.qualifications.map((q: string, i: number) => (
                   <li
                     key={i}
                     className="flex items-start gap-2 text-sm text-neutral-65"
