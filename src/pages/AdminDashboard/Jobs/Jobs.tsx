@@ -21,8 +21,13 @@ import Button from "../../../components/Reusable/Button/Button";
 import Table from "../../../components/Reusable/Table/Table";
 import { formatDate } from "../../../utils/formatDate";
 import JobStatusBadge from "../../../components/Reusable/JobStatusBadge/JobStatusBadge";
-import { useGetAllJobsQuery } from "../../../redux/Features/Job/jobApi";
+import {
+  useDeleteJobMutation,
+  useGetAllJobsQuery,
+  useUpdateJobMutation,
+} from "../../../redux/Features/Job/jobApi";
 import type { TJob } from "../../../types/job.types";
+import toast from "react-hot-toast";
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -32,6 +37,9 @@ const Jobs = () => {
   const skip = (page - 1) * limit;
   const [statusFilter, setStatusFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
+
+  const [updateJob] = useUpdateJobMutation();
+  const [deleteJob] = useDeleteJobMutation();
 
   const { data, isLoading, isFetching } = useGetAllJobsQuery({
     keyword: searchValue,
@@ -43,46 +51,37 @@ const Jobs = () => {
 
   const allJobs = data?.data?.jobs || [];
 
-  //   const [deleteJob] = useDeleteJobMutation();
-  //   const [updateJobStatus] = useUpdateJobStatusMutation();
-  //   const [toggleReferral] = useToggleReferralMutation();
-
   // ---- Stats (top row) ----
   const stats = {
-    total: 1,
-    active: 1,
-    closed: 0,
-    draft: 0
+    total: allJobs?.length || 0,
+    active: allJobs?.filter((j: TJob) => j.status === "Active").length,
+    closed: allJobs?.filter((j: TJob) => j.status === "Closed").length,
+    draft: allJobs?.filter((j: TJob) => j.status === "Draft").length,
   };
 
   // ---- Actions ----
-  //   const handleDelete = async (id: string) => {
-  //     toast.promise(deleteJob(id).unwrap(), {
-  //       loading: "Deleting job...",
-  //       success: "Job deleted successfully.",
-  //       error: (err: any) => err?.data?.message || "Something went wrong!",
-  //     });
-  //   };
+  const handleDelete = async (id: string) => {
+    toast.promise(deleteJob(id).unwrap(), {
+      loading: "Deleting job...",
+      success: "Job deleted successfully.",
+      error: (err: any) => err?.data?.message || "Something went wrong!",
+    });
+  };
 
-  //   const handleStatusChange = async (id: string, status: string) => {
-  //     toast.promise(updateJobStatus({ id, status }).unwrap(), {
-  //       loading: `Updating to ${status}...`,
-  //       success: `Job marked as ${status}.`,
-  //       error: (err: any) => err?.data?.message || "Something went wrong!",
-  //     });
-  //   };
-
-  //   const handleToggleReferral = async (id: string, enabled: boolean) => {
-  //     toast.promise(toggleReferral({ id, enabled }).unwrap(), {
-  //       loading: "Updating referral setting...",
-  //       success: `Referrals ${enabled ? "enabled" : "disabled"}.`,
-  //       error: (err: any) => err?.data?.message || "Something went wrong!",
-  //     });
-  //   };
+  const handleStatusChange = async (id: string, status: string) => {
+    const data = {
+      status,
+    };
+    toast.promise(updateJob({ id, data }).unwrap(), {
+      loading: `Updating to ${status}...`,
+      success: `Job marked as ${status}.`,
+      error: (err: any) => err?.data?.message || "Something went wrong!",
+    });
+  };
 
   // ---- Table data ----
   const tableData =
-    allJobs?.map((job:TJob) => ({
+    allJobs?.map((job: TJob) => ({
       _id: job._id,
       title: job.title,
       department: job.department,
@@ -129,39 +128,38 @@ const Jobs = () => {
     {
       icon: <FiCheckCircle />,
       label: "Activate",
-      //   onClick: (row: any) => handleStatusChange(row._id, "Active"),
-      onClick: () => {},
+      onClick: (row: any) => handleStatusChange(row._id, "Active"),
       className: "text-green-600",
       hidden: (row: any) => row.status === "Active",
     },
     {
       icon: <FiXCircle />,
       label: "Close",
-      //   onClick: (row: any) => handleStatusChange(row._id, "Closed"),
-      onClick: () => {},
+      onClick: (row: any) => handleStatusChange(row._id, "Closed"),
       className: "text-orange-600",
       hidden: (row: any) => row.status === "Closed",
     },
     {
       icon: <FiTrash2 />,
       label: "Delete",
-      //   onClick: (row: any) => handleDelete(row._id),
-      onClick: () => {},
+      onClick: (row: any) => handleDelete(row._id),
       className: "text-red-600",
     },
   ];
 
   // ---- Export ----
   const handleExport = () => {
-    if (!allJobs?.length) return;
+    if (!tableData?.length) return;
+
     const exportColumns = columns.filter((c) => c.key !== "status");
-    const exportData = allJobs?.map((job: any) => {
-      const row: Record<string, any> = {};
+
+    const exportData = tableData.map((row: any) => {
+      const out: Record<string, any> = {};
       exportColumns.forEach((col) => {
-        row[col.label] = job[col.key] ?? "";
+        out[col.label] = row[col.key] ?? "";
       });
-      row["Status"] = job.status;
-      return row;
+      out["Status"] = row.status;
+      return out;
     });
 
     const ws = XLSX.utils.json_to_sheet(exportData);
@@ -290,10 +288,12 @@ const Jobs = () => {
               data={tableData}
               actions={actions}
               rowKey="_id"
-              //   isLoading={isLoading || isFetching}
+              isLoading={isLoading || isFetching}
               page={page}
               onPageChange={setPage}
-              totalPages={1}
+              totalPages={data?.data?.meta?.totalPages || 1} // <-- Use real pagination from API
+              limit={limit} // <-- Pass down
+              setLimit={setLimit} // <-- Pass down
             />
           </div>
         </DashboardContainer>

@@ -1,4 +1,3 @@
-// src/pages/hr/Applications.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,6 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiEye,
-  FiDownload,
   FiEdit3,
   FiStar,
 } from "react-icons/fi";
@@ -24,6 +22,8 @@ import CandidateStatusBadge from "../../../components/Reusable/CandidateStatusBa
 import { formatDate } from "../../../utils/formatDate";
 import ChangeApplicationStatusModal from "../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
 import { useGetAllJobsQuery } from "../../../redux/Features/Job/jobApi";
+import { useGetAllApplicationsQuery } from "../../../redux/Features/Application/applicationApi";
+import type { TApplication } from "../../../types/application.types";
 
 const STATUS_OPTIONS = [
   "New",
@@ -225,89 +225,70 @@ const Applications = () => {
 
   // ---- Filter state ----
   const [searchValue, setSearchValue] = useState("");
-  const [page, setPage] = useState(1);
-  const [jobFilter, setJobFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+  const skip = (page - 1) * limit;
+  const [jobFilter, setJobFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedApplicationId, setSelectedApplicationId] = useState<string>("");
+
+  const { data: applications } = useGetAllApplicationsQuery({
+    keyword: searchValue,
+    skip,
+    limit,
+    status: statusFilter,
+  });
+  const allApplications = applications?.data?.applications || [];
 
   const { data } = useGetAllJobsQuery({
-      skip : 0,
-      limit : 10000,
-    });
-    const allJobs = data?.data?.jobs || [];
+    skip: 0,
+    limit: 10000,
+  });
+  const allJobs = data?.data?.jobs || [];
 
   // ---- Status-change modal state ----
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] =
     useState<boolean>(false);
 
-  // ---- Queries ----
-  //   const { data, isLoading, isFetching } = useGetAllCandidatesQuery({
-  //     keyword: searchValue,
-  //     page,
-  //     jobId: jobFilter,
-  //     status: statusFilter,
-  //     department: departmentFilter,
-  //   });
-
-  //   const { data: jobsData } = useGetAllJobsQuery({ limit: 100 });
-  //   const jobs = jobsData?.data?.jobs || [];
-
-  //   const allCandidates: TCandidate[] = data?.data?.candidates || [];
-
-  //   const [updateCandidateStatus] = useUpdateCandidateStatusMutation();
-
   // ---- Top stats ----
   const stats = {
-    total: candidatesMock.length || 0,
-    new: candidatesMock.filter((c) => c.status === "New").length,
-    screening: candidatesMock.filter((c) => c.status === "Screening").length,
-    interview: candidatesMock.filter((c) => c.status === "Interview").length,
-    selected: candidatesMock.filter((c) => c.status === "Selected").length,
-    hired: candidatesMock.filter((c) => c.status === "Hired").length,
+    total: allApplications?.length || 0,
+    new: allApplications?.filter((c:TApplication) => c.status === "New").length,
+    screening: allApplications?.filter((c:TApplication) => c.status === "Screening").length,
+    interview: allApplications?.filter((c:TApplication) => c.status === "Interview").length,
+    selected: allApplications?.filter((c:TApplication) => c.status === "Selected").length,
+    hired: allApplications?.filter((c:TApplication) => c.status === "Hired").length,
   };
 
   // ---- Handlers ----
   const openStatusModal = (row: any) => {
-    console.log(row);
+    setSelectedApplicationId(row?._id);
     setIsChangeStatusModalOpen(true);
   };
 
-  //   const handleStatusSave = async () => {
-  //     if (!statusTarget) return;
-  //     if (newStatus === statusTarget.status) {
-  //       toast.error("Select a different status.");
-  //       return;
-  //     }
-  //     try {
-  //       await updateCandidateStatus({
-  //         id: statusTarget._id,
-  //         status: newStatus,
-  //         note: statusNote || undefined,
-  //       }).unwrap();
-  //       toast.success(`Status changed to ${newStatus}.`);
-  //       setStatusModalOpen(false);
-  //     } catch (err: any) {
-  //       toast.error(err?.data?.message || "Failed to update status.");
-  //     }
-  //   };
-
-  //   const handleDownloadResume = (row: TCandidate) => {
-  //     toast.success(`Downloading ${row.resumeFileName || "resume"}...`);
-  //   };
 
   // ---- Table data ----
   const tableData =
-    candidatesMock.map((c) => ({
+    allApplications?.map((c:TApplication) => ({
       _id: c._id,
       candidate: {
         name: c.name,
         email: c.email,
-        phone: c.phone,
-        jobTitle: c.jobTitle,
+        phone: c.phoneNumber,
       },
-      experience: `${c.experience} yrs`,
-      source: c.source,
-      referredBy: c.referredBy || "—",
-      rating: c.rating ?? "—",
+      experience: `${c.experience}`,
+      source: <span className="capitalize">{c.source}</span>,
+      resume:  (
+        <a
+          href={c.resumeUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="text-primary underline"
+        >
+          View Resume
+        </a>
+      ),
+      rating: c.resumeRating ?? "—",
       status: c.status,
       appliedDate: formatDate(c.createdAt),
       _raw: c,
@@ -330,7 +311,7 @@ const Applications = () => {
     },
     { key: "experience", label: "Exp" },
     { key: "source", label: "Source" },
-    { key: "referredBy", label: "Referred By" },
+    { key: "resume", label: "Resume" },
     {
       key: "rating",
       label: "Rating",
@@ -350,28 +331,19 @@ const Applications = () => {
   ];
 
   const actions = [
-    {
-      icon: <FiEye />,
-      label: "View Details",
-      onClick: (row: any) => navigate(`/dashboard/admin/application/${row._id}`),
-    },
-    {
-      icon: <FiDownload />,
-      label: "Download Resume",
-      onClick: (row: any) => {
-        if (row._raw.resumeUrl) {
-          window.open(row._raw.resumeUrl, "_blank", "noopener,noreferrer");
-        }
-      },
-      className: "text-blue-600",
-    },
-    {
-      icon: <FiEdit3 />,
-      label: "Change Status",
-      onClick: (row: any) => openStatusModal(row._raw),
-      className: "text-indigo-600",
-    },
-  ];
+  {
+    icon: <FiEye />,
+    label: "View Details",
+    onClick: (row: any) =>
+      navigate(`/dashboard/admin/application/${row._id}`),
+  },
+  {
+    icon: <FiEdit3 />,
+    label: "Change Status",
+    onClick: (row: any) => openStatusModal(row._raw),
+    className: "text-indigo-600",
+  },
+];
 
   // ---- Export ----
   const handleExport = () => {
@@ -492,7 +464,7 @@ const Applications = () => {
                     }}
                     className="py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary-10 focus:outline-none px-3 text-sm text-neutral-40 outline-none cursor-pointer"
                   >
-                    <option value="All">All Jobs</option>
+                    <option value="all">All Jobs</option>
                     {allJobs?.map((job: any) => (
                       <option key={job?._id} value={job?._id}>
                         {job?.title}
@@ -509,7 +481,7 @@ const Applications = () => {
                     }}
                     className="py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary-10 focus:outline-none px-3 text-sm text-neutral-40 outline-none cursor-pointer"
                   >
-                    <option value="All">All Status</option>
+                    <option value="all">All Status</option>
                     {STATUS_OPTIONS.map((s) => (
                       <option key={s} value={s}>
                         {s}
@@ -552,6 +524,7 @@ const Applications = () => {
       <ChangeApplicationStatusModal
         isModalOpen={isChangeStatusModalOpen}
         setIsModalOpen={setIsChangeStatusModalOpen}
+        selectedApplicationId={selectedApplicationId}
       />
     </div>
   );

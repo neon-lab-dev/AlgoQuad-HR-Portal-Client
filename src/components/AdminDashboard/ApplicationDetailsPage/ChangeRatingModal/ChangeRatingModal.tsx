@@ -1,14 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { FiStar } from "react-icons/fi";
 import Modal from "../../../Reusable/Modal/Modal";
 import Button from "../../../Reusable/Button/Button";
+import { useUpdateApplicationMutation } from "../../../../redux/Features/Application/applicationApi";
+import toast from "react-hot-toast";
 
 type Props = {
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
   currentRating?: number;
   candidateName?: string;
-  onSave?: (rating: number) => void;
+  applicationId: string
 };
 
 const ChangeRatingModal = ({
@@ -16,18 +19,28 @@ const ChangeRatingModal = ({
   setIsModalOpen,
   currentRating = 0,
   candidateName = "this candidate",
-  onSave,
+  applicationId
 }: Props) => {
   const [rating, setRating] = useState<number>(currentRating);
+  const [updateApplication, {isLoading}] = useUpdateApplicationMutation();
 
   // Re-sync when the modal opens with a new candidate
   useEffect(() => {
     if (isModalOpen) setRating(currentRating);
   }, [isModalOpen, currentRating]);
 
-  const handleSave = () => {
-    onSave?.(rating);
-    setIsModalOpen(false);
+  const handleSave = async () => {
+    try {
+      const payload = {
+        resumeRating: rating
+      }
+      const response =await updateApplication({ id:applicationId, data: payload }).unwrap();
+      if (response?.success) {
+        setIsModalOpen(false);
+      }
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Something went wrong!");
+    }
   };
 
   const handleReset = () => setRating(currentRating);
@@ -62,12 +75,12 @@ const ChangeRatingModal = ({
             {rating >= 8
               ? "Excellent match"
               : rating >= 6
-              ? "Good match"
-              : rating >= 4
-              ? "Average match"
-              : rating === 0
-              ? "Not rated yet"
-              : "Needs review"}
+                ? "Good match"
+                : rating >= 4
+                  ? "Average match"
+                  : rating === 0
+                    ? "Not rated yet"
+                    : "Needs review"}
           </p>
         </div>
 
@@ -111,9 +124,7 @@ const ChangeRatingModal = ({
 
         {/* ---------- Quick picks ---------- */}
         <div>
-          <p className="text-sm font-medium text-neutral-40 mb-2">
-            Quick pick
-          </p>
+          <p className="text-sm font-medium text-neutral-40 mb-2">Quick pick</p>
           <div className="grid grid-cols-6 gap-2">
             {[0, 2, 4, 6, 8, 10].map((n) => {
               const active = rating === n;
@@ -149,21 +160,21 @@ const ChangeRatingModal = ({
 
           <div className="flex items-center gap-3">
             <Button
-            variant="secondary"
-            label="Cancel"
-            type="button"
-            classNames="py-2 px-3"
-            onClick={() => setIsModalOpen(false)}
-          />
-          <Button
-            variant="primary"
-            label="Change Status"
-            type="submit"
-            classNames="py-2 px-3"
-            onClick={handleSave}
-            // isLoading={isAddingCourse || isUpdatingCourse}
-          />
-                      </div>
+              variant="secondary"
+              label="Cancel"
+              type="button"
+              classNames="py-2 px-3"
+              onClick={() => setIsModalOpen(false)}
+            />
+            <Button
+              variant="primary"
+              label="Change Status"
+              type="submit"
+              classNames="py-2 px-3"
+              onClick={handleSave}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
       </div>
     </Modal>

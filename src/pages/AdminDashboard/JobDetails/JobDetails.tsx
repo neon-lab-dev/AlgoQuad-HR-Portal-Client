@@ -47,13 +47,13 @@ const JobDetails = () => {
         <div className="flex items-center gap-3 flex-wrap">
           <Button
             variant="secondary"
-            onClick={() => navigate(`/hr/jobs/edit/${job._id}`)}
+            onClick={() => navigate(`/dashboard/admin/applications/${job._id}`)}
             label="View Applications"
             classNames="py-2 px-3"
           />
           <Button
             variant="secondary"
-            onClick={() => navigate(`/hr/jobs/edit/${job._id}`)}
+            onClick={() => navigate(`/dashboard/admin/job/edit/${job._id}`)}
             label="Edit Job"
             classNames="py-2 px-3"
           />
@@ -85,7 +85,7 @@ const JobDetails = () => {
               <h1 className="text-2xl font-bold text-neutral-40">
                 {job.title}
               </h1>
-              <JobStatusBadge status={status as any} />
+              <JobStatusBadge status={job?.status as any} />
             </div>
 
             <p className="text-sm text-neutral-65 mt-1">
@@ -118,33 +118,6 @@ const JobDetails = () => {
             </div>
           </div>
 
-          {/* Right: quick counters */}
-          <div className="lg:w-72 shrink-0 grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-neutral-98 p-4">
-              <p className="text-xs text-neutral-65">Openings</p>
-              <p className="text-2xl font-bold text-neutral-40 mt-1">
-                {job.openings}
-              </p>
-            </div>
-            <div className="rounded-xl border border-neutral-98 p-4">
-              <p className="text-xs text-neutral-65">Applicants</p>
-              <p className="text-2xl font-bold text-neutral-40 mt-1">
-                1
-              </p>
-            </div>
-            <div className="rounded-xl border border-neutral-98 p-4">
-              <p className="text-xs text-neutral-65">In Interview</p>
-              <p className="text-2xl font-bold text-indigo-600 mt-1">
-                2
-              </p>
-            </div>
-            <div className="rounded-xl border border-neutral-98 p-4">
-              <p className="text-xs text-neutral-65">Hired</p>
-              <p className="text-2xl font-bold text-green-600 mt-1">
-                1
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Divider */}
@@ -167,7 +140,7 @@ const JobDetails = () => {
               Required Skills
             </h3>
             <div className="flex flex-wrap gap-2">
-              {job.skills.map((s:string) => (
+              {job?.skills?.map((s:string) => (
                 <span
                   key={s}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-105 text-neutral-40 border border-neutral-98 hover:border-primary-10 hover:text-primary-10 transition-colors cursor-default"
