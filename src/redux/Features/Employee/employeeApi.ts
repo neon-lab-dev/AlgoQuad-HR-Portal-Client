@@ -63,7 +63,6 @@ const employeeApi = baseApi.injectEndpoints({
     }),
 
     deleteEmployee: builder.mutation<any, string>({
-
       query: (id) => ({
         url: `/employee/delete/${id}`,
         method: "DELETE",

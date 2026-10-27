@@ -20,12 +20,16 @@ import SearchInput from "../../../../components/Reusable/SearchInput/SearchInput
 import Button from "../../../../components/Reusable/Button/Button";
 import Table from "../../../../components/Reusable/Table/Table";
 import { formatDate } from "../../../../utils/formatDate";
-import { useGetAllEmployeesQuery } from "../../../../redux/Features/Employee/employeeApi";
+import {
+  useGetAllEmployeesQuery,
+  useUpdateEmployeeMutation,
+} from "../../../../redux/Features/Employee/employeeApi";
 import type { TEmployee } from "../../../../types/employee.types";
 import { useNavigate } from "react-router-dom";
+import { DEPARTMENT_OPTIONS } from "../../JobManagement/AddOrEditJob/AddOrEditJob";
 
 const Employees = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   // ---- State ----
   const [searchValue, setSearchValue] = useState("");
   const [page, setPage] = useState<number>(1);
@@ -43,6 +47,8 @@ const Employees = () => {
   });
   const employee = data?.data || [];
 
+  const [updateEmployee] = useUpdateEmployeeMutation();
+
   // ---- Stats ----
   const stats = {
     total: employee.length,
@@ -54,11 +60,23 @@ const Employees = () => {
       .length,
   };
 
-  // ---- Actions ----
-  const handleToggleStatus = (id: string, currentStatus: string) => {
+  const handleToggleStatus = async (id: string, currentStatus: string) => {
     const nextStatus = currentStatus === "Active" ? "Inactive" : "Active";
-    toast.success(`Employee portal access marked as ${nextStatus}. (Mock)`);
-    // TODO: await updateEmployeeStatus({ id, status: nextStatus }).unwrap()
+
+    const payload = {
+      accountStatus: nextStatus,
+    };
+
+    try {
+      const toastId = toast.loading(`Marking account as ${nextStatus}...`);
+      await updateEmployee({ id, data: payload }).unwrap();
+      toast.success(`Employee portal access marked as ${nextStatus}.`, {
+        id: toastId,
+      });
+    } catch (err: any) {
+      // Show error toast if it fails
+      toast.error(err?.data?.message || "Failed to update account status.");
+    }
   };
 
   // ---- Table Data ----
@@ -93,7 +111,7 @@ const Employees = () => {
     { key: "joiningDate", label: "Joined" },
     {
       key: "status",
-      label: "Access",
+      label: "Account Status",
       render: (row: any) => (
         <span
           className={`px-2 py-0.5 text-xs font-medium rounded-full border ${
@@ -112,13 +130,12 @@ const Employees = () => {
     {
       icon: <FiEye />,
       label: "View Profile",
-      onClick: (row: any) =>
-        navigate(`/dashboard/admin/employee/${row._id}`),
+      onClick: (row: any) => navigate(`/dashboard/admin/employee/${row._id}`),
     },
     {
       icon: <FiEdit2 />,
       label: "Edit Employee",
-      onClick: (row: any) => toast.success(`Editing ${row.name} (Mock)`), // Replace with navigate(`/dashboard/admin/employee/edit/${row._id}`)
+      onClick: (row: any) => toast.success(`Editing ${row.name} (Mock)`),
       className: "text-blue-600",
     },
     {
@@ -132,26 +149,53 @@ const Employees = () => {
 
   // ---- Export ----
   const handleExport = () => {
-    if (!tableData?.length) return;
+    if (!employee?.length) return;
 
-    const exportColumns = columns.filter((c) => c.key !== "status");
+    const exportData = employee?.map((emp: any) => {
+      const user = emp.userId || {};
 
-    const exportData = tableData.map((row: any) => {
-      const out: Record<string, any> = {};
-      exportColumns.forEach((col) => {
-        out[col.label] = row[col.key] ?? "";
-      });
-      out["Portal Access"] = row.status;
-      return out;
+      return {
+        // ---- Employee Model Data ----
+        "Employee ID": emp.employeeId || "",
+        Department: emp.department || "",
+        Designation: emp.designation || "",
+        "Employment Type": emp.employmentType || "",
+        "Account Status": emp.accountStatus || "",
+        "Joining Date": emp.joiningDate ? formatDate(emp.joiningDate) : "",
+
+        // ---- User Model Data ----
+        "Full Name": user.name || "",
+        Email: user.email || "",
+        "Phone Number": user.phoneNumber || "",
+        Gender: user.gender || "",
+        City: user.city || "",
+        State: user.state || "",
+        Country: user.country || "",
+        "System Role": user.role || "",
+        "Profile Picture URL": user.profilePicture || "",
+        "Is First Login": user.isFirstLogin ? "Yes" : "No",
+
+        // ---- Audit Timestamps ----
+        "Profile Created At": emp.createdAt ? formatDate(emp.createdAt) : "",
+        "Last Updated At": emp.updatedAt ? formatDate(emp.updatedAt) : "",
+      };
     });
 
     const ws = XLSX.utils.json_to_sheet(exportData);
+
+    // Optional: Auto-adjust column widths for better readability
+    const colWidths = Object.keys(exportData[0]).map((key) => ({
+      wch: Math.max(key.length, 20), // Minimum 20 characters wide
+    }));
+    ws["!cols"] = colWidths;
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Employees");
     const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+
     saveAs(
       new Blob([buf], { type: "application/octet-stream" }),
-      "employees.xlsx",
+      `employees_export_${new Date().toISOString().split("T")[0]}.xlsx`,
     );
   };
 
@@ -247,10 +291,11 @@ const Employees = () => {
                     className="py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary-10 focus:outline-none px-3 text-sm text-neutral-40 outline-none cursor-pointer"
                   >
                     <option value="all">All Departments</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Design">Design</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="HR">HR</option>
+                    {DEPARTMENT_OPTIONS.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
                   </select>
 
                   <Button

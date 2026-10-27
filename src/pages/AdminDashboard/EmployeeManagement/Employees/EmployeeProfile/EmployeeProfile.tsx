@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import {
   FiMail,
   FiPhone,
@@ -18,8 +21,16 @@ import {
 } from "react-icons/fi";
 import DashboardContainer from "../../../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
 import Loader from "../../../../../components/Shared/Loader/Loader";
-import { useGetSingleEmployeeByIdQuery, useUpdateEmployeeMutation } from "../../../../../redux/Features/Employee/employeeApi";
+import {
+  useDeleteEmployeeMutation,
+  useGetSingleEmployeeByIdQuery,
+  useUpdateEmployeeMutation,
+} from "../../../../../redux/Features/Employee/employeeApi";
 import { formatDate } from "../../../../../utils/formatDate";
+import Button from "../../../../../components/Reusable/Button/Button";
+import ConfirmationModal from "../../../../../components/ConfirmationModal/ConfirmationModal";
+
+type TActionType = "activate" | "deactivate" | "delete" | "restore" | null;
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +39,12 @@ const EmployeeProfile = () => {
   const { data, isLoading } = useGetSingleEmployeeByIdQuery(id!);
   const employee = data?.data;
 
-  const = useUpdateEmployeeMutation();
+  const [updateEmployee, { isLoading: isUpdating }] = useUpdateEmployeeMutation();
+  const [deleteEmployee, { isLoading: isDeleting }] = useDeleteEmployeeMutation();
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [actionType, setActionType] = useState<TActionType>(null);
 
   if (isLoading) {
     return (
@@ -54,12 +70,78 @@ const EmployeeProfile = () => {
 
   const { userId: user } = employee;
 
+  // ---- Handlers ----
+  const openConfirmModal = (type: TActionType) => {
+    setActionType(type);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!actionType) return;
+
+    try {
+      if (actionType === "delete") {
+        await deleteEmployee(id as string).unwrap();
+        toast.success("Employee deleted successfully.");
+        navigate("/dashboard/admin/employees"); // Redirect after delete
+      } else {
+        // Determine the payload based on action
+        let payload: any = {};
+        if (actionType === "activate") payload = { accountStatus: "Active" };
+        if (actionType === "deactivate") payload = { accountStatus: "Inactive" };
+        if (actionType === "restore") payload = { isDeleted: false, accountStatus: "Active" };
+
+        await updateEmployee({ id, data: payload }).unwrap();
+        toast.success(`Account ${actionType}d successfully.`);
+      }
+      setIsModalOpen(false);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Something went wrong.");
+    }
+  };
+
+  // Helper to render modal content based on action
+  const getModalContent = () => {
+    switch (actionType) {
+      case "activate":
+        return {
+          title: "Activate Account",
+          message: "Are you sure you want to activate this employee's portal access?",
+          btnText: "Activate",
+          btnColor: "bg-blue-600 hover:bg-blue-700",
+        };
+      case "deactivate":
+        return {
+          title: "Deactivate Account",
+          message: "Are you sure you want to deactivate this employee's portal access? They will no longer be able to log in.",
+          btnText: "Deactivate",
+          btnColor: "bg-orange-600 hover:bg-orange-700",
+        };
+      case "delete":
+        return {
+          title: "Delete Employee",
+          message: "Are you sure you want to delete this employee? This action will soft-delete the account and revoke access.",
+          btnText: "Delete",
+          btnColor: "bg-red-600 hover:bg-red-700",
+        };
+      case "restore":
+        return {
+          title: "Restore Account",
+          message: "Are you sure you want to restore this deleted employee account?",
+          btnText: "Restore",
+          btnColor: "bg-green-600 hover:bg-green-700",
+        };
+      default:
+        return { title: "", message: "", btnText: "", btnColor: "" };
+    }
+  };
+
+  const modalConfig = getModalContent();
+
   return (
     <div className="font-Montserrat max-w-7xl mx-auto pb-10">
-      {/* Header / Back button */}
       {/* Header / Action Bar */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Left: Back Button */}
         <button
           onClick={() => navigate(-1)}
           className="inline-flex items-center gap-2 text-neutral-40 hover:text-primary-10 transition-colors text-sm font-medium"
@@ -68,16 +150,10 @@ const EmployeeProfile = () => {
           Back to Employees
         </button>
 
-        {/* Right: Actions & Badges */}
         <div className="flex flex-wrap items-center gap-2">
-
-          {/* Conditional Buttons */}
           {user?.isDeleted ? (
             <button
-            //   onClick={() => {
-            //     toast.success("Account restored successfully (Mock)");
-            //     setIsDeleted(false);
-            //   }}
+              onClick={() => openConfirmModal("restore")}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
             >
               <FiRotateCcw size={14} /> Restore Account
@@ -86,20 +162,14 @@ const EmployeeProfile = () => {
             <>
               {employee?.accountStatus === "Active" ? (
                 <button
-                //   onClick={() => {
-                //     toast.success("Account deactivated (Mock)");
-                //     setAccountStatus("Inactive");
-                //   }}
+                  onClick={() => openConfirmModal("deactivate")}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-700 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-colors"
                 >
                   <FiUserX size={14} /> Deactivate
                 </button>
               ) : (
                 <button
-                //   onClick={() => {
-                //     toast.success("Account activated (Mock)");
-                //     setAccountStatus("Active");
-                //   }}
+                  onClick={() => openConfirmModal("activate")}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
                 >
                   <FiUserCheck size={14} /> Activate
@@ -107,16 +177,7 @@ const EmployeeProfile = () => {
               )}
 
               <button
-                // onClick={() => {
-                //   if (
-                //     window.confirm(
-                //       "Are you sure you want to delete this account?",
-                //     )
-                //   ) {
-                //     toast.success("Account deleted (Mock)");
-                //     setIsDeleted(true);
-                //   }
-                // }}
+                onClick={() => openConfirmModal("delete")}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
               >
                 <FiTrash2 size={14} /> Delete
@@ -126,12 +187,12 @@ const EmployeeProfile = () => {
         </div>
       </div>
 
+      {/* Main Content (Unchanged) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* ================= LEFT COLUMN (Profile Card) ================= */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           <DashboardContainer>
             <div className="flex flex-col items-center text-center">
-              {/* Profile Picture */}
               <div className="relative w-32 h-32 mb-4 rounded-full border-4 border-white shadow-md overflow-hidden bg-neutral-105">
                 {user?.profilePicture ? (
                   <img
@@ -146,7 +207,6 @@ const EmployeeProfile = () => {
                 )}
               </div>
 
-              {/* Name & Role */}
               <h1 className="text-2xl font-bold text-neutral-40">
                 {user?.name}
               </h1>
@@ -157,7 +217,6 @@ const EmployeeProfile = () => {
                 {employee.department} Department
               </p>
 
-              {/* Employee ID Pill */}
               <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-neutral-105 text-neutral-50 text-xs font-mono border border-neutral-98">
                 <FiShield size={12} /> ID: {employee.employeeId}
               </div>
@@ -165,7 +224,6 @@ const EmployeeProfile = () => {
 
             <hr className="my-6 border-neutral-98" />
 
-            {/* Contact Info */}
             <div className="flex flex-col gap-4 text-sm text-neutral-60">
               <div className="flex items-start gap-3">
                 <FiMail className="text-neutral-40 mt-0.5" />
@@ -203,7 +261,6 @@ const EmployeeProfile = () => {
 
         {/* ================= RIGHT COLUMN (Employment Details) ================= */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          {/* Employment Details Card */}
           <DashboardContainer>
             <div className="flex items-center gap-2 border-b border-neutral-98 pb-4 mb-6">
               <FiBriefcase className="text-primary-10" size={20} />
@@ -273,7 +330,6 @@ const EmployeeProfile = () => {
             </div>
           </DashboardContainer>
 
-          {/* Personal Details Card */}
           <DashboardContainer>
             <div className="flex items-center gap-2 border-b border-neutral-98 pb-4 mb-6">
               <FiUser className="text-primary-10" size={20} />
@@ -326,7 +382,6 @@ const EmployeeProfile = () => {
             </div>
           </DashboardContainer>
 
-          {/* Timeline / Audit Trail Card */}
           <DashboardContainer>
             <div className="flex items-center gap-2 border-b border-neutral-98 pb-4 mb-6">
               <FiCalendar className="text-primary-10" size={20} />
@@ -370,6 +425,34 @@ const EmployeeProfile = () => {
           </DashboardContainer>
         </div>
       </div>
+
+      {/* ================= CONFIRMATION MODAL ================= */}
+      <ConfirmationModal
+        isConfirmationModalOpen={isModalOpen}
+        setIsConfirmationModalOpen={setIsModalOpen}
+        heading={modalConfig.title}
+      >
+        <div className="p-6">
+          <p className="text-neutral-60 text-sm mb-6">{modalConfig.message}</p>
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="custom"
+              label="Cancel"
+              type="button"
+              classNames="py-2 px-4 border border-neutral-98"
+              onClick={() => setIsModalOpen(false)}
+            />
+            <Button
+              variant="custom"
+              label={modalConfig.btnText}
+              type="button"
+              classNames={`py-2 px-4 text-white border-0 ${modalConfig.btnColor}`}
+              onClick={handleConfirmAction}
+              isLoading={isUpdating || isDeleting}
+            />
+          </div>
+        </div>
+      </ConfirmationModal>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 // src/pages/hr/AddOrEditJob.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from "react";
@@ -18,7 +19,7 @@ import {
 } from "../../../../redux/Features/Job/jobApi";
 
 // ---- Options ----
-const DEPARTMENT_OPTIONS = [
+export const DEPARTMENT_OPTIONS = [
   "Development",
   "Engineering",
   "Design",
