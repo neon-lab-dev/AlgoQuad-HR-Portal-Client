@@ -14,6 +14,7 @@ import AddOrEditJob from "../pages/AdminDashboard/JobManagement/AddOrEditJob/Add
 import AddOrEditCandidate from "../pages/AdminDashboard/JobManagement/AddOrEditCandidate/AddOrEditCandidate";
 import Employees from "../pages/AdminDashboard/EmployeeManagement/Employees/Employees";
 import EmployeeProfile from "../pages/AdminDashboard/EmployeeManagement/Employees/EmployeeProfile/EmployeeProfile";
+import AddOrEditEmployee from "../pages/AdminDashboard/EmployeeManagement/AddOrEditEmployee/AddOrEditEmployee";
 
 export const router = createBrowserRouter([
   {
@@ -91,6 +92,14 @@ export const router = createBrowserRouter([
       {
         path: "employee/:id",
         element: <EmployeeProfile />,
+      },
+      {
+        path: "employee/add",
+        element: <AddOrEditEmployee />,
+      },
+      {
+        path: "employee/edit/:id",
+        element: <AddOrEditEmployee />,
       },
     ],
   },

@@ -25,7 +25,7 @@ import {
   useUpdateEmployeeMutation,
 } from "../../../../redux/Features/Employee/employeeApi";
 import type { TEmployee } from "../../../../types/employee.types";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { DEPARTMENT_OPTIONS } from "../../JobManagement/AddOrEditJob/AddOrEditJob";
 
 const Employees = () => {
@@ -83,6 +83,7 @@ const Employees = () => {
   const tableData = employee?.map((emp: TEmployee) => ({
     _id: emp._id,
     name: emp.userId.name,
+    profilePicture: emp.userId.profilePicture,
     employeeId: emp.employeeId,
     contact: emp.userId.email,
     department: emp.department,
@@ -97,11 +98,31 @@ const Employees = () => {
     { key: "employeeId", label: "Emp ID" },
     {
       key: "name",
-      label: "Name / Email",
+      label: "Employee",
       render: (row: any) => (
-        <div className="flex flex-col">
-          <span className="font-medium text-neutral-40">{row.name}</span>
-          <span className="text-xs text-neutral-65">{row.contact}</span>
+        <div className="flex items-center gap-3">
+          {/* Profile Picture or Fallback Initials */}
+          {row.profilePicture ? (
+            <img
+              src={row.profilePicture}
+              alt={row.name}
+              className="w-10 h-10 rounded-full object-cover border border-neutral-98 shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-primary-10/10 text-primary-10 flex items-center justify-center font-bold text-sm shrink-0 border border-primary-10/20">
+              {row.name?.charAt(0).toUpperCase()}
+            </div>
+          )}
+
+          {/* Name & Email */}
+          <div className="flex flex-col min-w-0">
+            <span className="font-medium text-neutral-40 truncate">
+              {row.name}
+            </span>
+            <span className="text-xs text-neutral-65 truncate">
+              {row.contact}
+            </span>
+          </div>
         </div>
       ),
     },
@@ -135,7 +156,7 @@ const Employees = () => {
     {
       icon: <FiEdit2 />,
       label: "Edit Employee",
-      onClick: (row: any) => toast.success(`Editing ${row.name} (Mock)`),
+      onClick: (row: any) => navigate(`/dashboard/admin/employee/edit/${row._id}`),
       className: "text-blue-600",
     },
     {
@@ -304,14 +325,13 @@ const Employees = () => {
                     label="Export"
                     classNames="w-fit py-2 px-3"
                   />
-                  <Button
-                    variant="primary"
-                    onClick={() =>
-                      toast.success("Open Add Employee Modal (Mock)")
-                    }
-                    label="+ Add Employee"
-                    classNames="w-fit py-2 px-4 border-2 border-primary-10"
-                  />
+                  <Link to="/dashboard/admin/employee/add">
+                    <Button
+                      variant="primary"
+                      label="+ Add Employee"
+                      classNames="w-fit py-2 px-4 border-2 border-primary-10"
+                    />
+                  </Link>
                 </div>
               </div>
             </div>

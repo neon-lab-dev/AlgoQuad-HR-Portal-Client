@@ -321,7 +321,7 @@ const AddOrEditJob = () => {
               label="Cancel"
               type="button"
               classNames="py-2 px-4"
-              onClick={() => navigate("/hr/jobs")}
+              onClick={() => navigate("/dashboard/admin/jobs")}
             />
             <Button
               variant="primary"
