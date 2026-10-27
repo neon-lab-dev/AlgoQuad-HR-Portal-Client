@@ -6,13 +6,13 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { FiArrowLeft, FiStar, FiFileText } from "react-icons/fi";
 import toast from "react-hot-toast";
 
-import DashboardContainer from "../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
-import TextInput from "../../../components/Reusable/TextInput/TextInput";
-import TextArea from "../../../components/Reusable/TextArea/TextArea";
-import SelectDropdown from "../../../components/Reusable/SelectDropdown/SelectDropdown";
-import Button from "../../../components/Reusable/Button/Button";
+import DashboardContainer from "../../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
+import TextInput from "../../../../components/Reusable/TextInput/TextInput";
+import TextArea from "../../../../components/Reusable/TextArea/TextArea";
+import SelectDropdown from "../../../../components/Reusable/SelectDropdown/SelectDropdown";
+import Button from "../../../../components/Reusable/Button/Button";
 import { DynamicList } from "../AddOrEditJob/AddOrEditJob";
-import { useAddCandidateMutation } from "../../../redux/Features/Application/applicationApi";
+import { useAddCandidateMutation } from "../../../../redux/Features/Application/applicationApi";
 
 // ---- Options ----
 const SOURCE_OPTIONS = ["HR", "Referral", "LinkedIn", "Website"];

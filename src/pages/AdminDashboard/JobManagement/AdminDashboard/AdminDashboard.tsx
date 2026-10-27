@@ -1,6 +1,6 @@
-import WelcomeSection from "../../../components/Dashboard/DashboardPage/WelcomeSection/WelcomeSection";
-import StatusCard from "../../../components/Dashboard/SharedComponents/StatusCard/StatusCard";
-import StatusCardSkeleton from "../../../components/Dashboard/SharedComponents/StatusCard/StatusCardSkeleton";
+import WelcomeSection from "../../../../components/Dashboard/DashboardPage/WelcomeSection/WelcomeSection";
+import StatusCard from "../../../../components/Dashboard/SharedComponents/StatusCard/StatusCard";
+import StatusCardSkeleton from "../../../../components/Dashboard/SharedComponents/StatusCard/StatusCardSkeleton";
 import {
   FiBriefcase,
   FiUsers,

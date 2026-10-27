@@ -19,14 +19,14 @@ import {
   FiBriefcase,
 } from "react-icons/fi";
 
-import DashboardContainer from "../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
-import Button from "../../../components/Reusable/Button/Button";
-import CandidateStatusBadge from "../../../components/Reusable/CandidateStatusBadge/CandidateStatusBadge";
-import { formatDate } from "../../../utils/formatDate";
-import ChangeRatingModal from "../../../components/AdminDashboard/ApplicationDetailsPage/ChangeRatingModal/ChangeRatingModal";
-import ChangeApplicationStatusModal from "../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
-import { useGetSingleApplicationByIdQuery } from "../../../redux/Features/Application/applicationApi";
-import Loader from "../../../components/Shared/Loader/Loader";
+import DashboardContainer from "../../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
+import Button from "../../../../components/Reusable/Button/Button";
+import CandidateStatusBadge from "../../../../components/Reusable/CandidateStatusBadge/CandidateStatusBadge";
+import { formatDate } from "../../../../utils/formatDate";
+import ChangeRatingModal from "../../../../components/AdminDashboard/ApplicationDetailsPage/ChangeRatingModal/ChangeRatingModal";
+import ChangeApplicationStatusModal from "../../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
+import { useGetSingleApplicationByIdQuery } from "../../../../redux/Features/Application/applicationApi";
+import Loader from "../../../../components/Shared/Loader/Loader";
 
 const statusMeta: Record<
   string,

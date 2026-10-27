@@ -1,17 +1,19 @@
 import { createBrowserRouter } from "react-router-dom";
 import NotFound from "../pages/NotFound/NotFound";
 import DashboardLayout from "../layouts/DashboardLayout/DashboardLayout";
-import AdminDashboard from "../pages/AdminDashboard/AdminDashboard/AdminDashboard";
+import AdminDashboard from "../pages/AdminDashboard/JobManagement/AdminDashboard/AdminDashboard";
 import ResetPassword from "../components/Auth/ResetPassword/ResetPassword";
 import ComingSoon from "../pages/ComingSoon/ComingSoon";
 import AuthLayout from "../layouts/AuthLayout/AuthLayout";
 import Login from "../pages/Auth/Login/Login";
-import Jobs from "../pages/AdminDashboard/Jobs/Jobs";
-import Applications from "../pages/AdminDashboard/Applications/Applications";
-import ApplicationDetails from "../pages/AdminDashboard/ApplicationDetails/ApplicationDetails";
-import JobDetails from "../pages/AdminDashboard/JobDetails/JobDetails";
-import AddOrEditJob from "../pages/AdminDashboard/AddOrEditJob/AddOrEditJob";
-import AddOrEditCandidate from "../pages/AdminDashboard/AddOrEditCandidate/AddOrEditCandidate";
+import Jobs from "../pages/AdminDashboard/JobManagement/Jobs/Jobs";
+import Applications from "../pages/AdminDashboard/JobManagement/Applications/Applications";
+import ApplicationDetails from "../pages/AdminDashboard/JobManagement/ApplicationDetails/ApplicationDetails";
+import JobDetails from "../pages/AdminDashboard/JobManagement/JobDetails/JobDetails";
+import AddOrEditJob from "../pages/AdminDashboard/JobManagement/AddOrEditJob/AddOrEditJob";
+import AddOrEditCandidate from "../pages/AdminDashboard/JobManagement/AddOrEditCandidate/AddOrEditCandidate";
+import Employees from "../pages/AdminDashboard/EmployeeManagement/Employees/Employees";
+import EmployeeProfile from "../pages/AdminDashboard/EmployeeManagement/Employees/EmployeeProfile/EmployeeProfile";
 
 export const router = createBrowserRouter([
   {
@@ -82,6 +84,14 @@ export const router = createBrowserRouter([
       //   path: "candidate/edit/:id",
       //   element: <AddOrEditCandidate />,
       // },
+      {
+        path: "employees",
+        element: <Employees />,
+      },
+      {
+        path: "employee/:id",
+        element: <EmployeeProfile />,
+      },
     ],
   },
   {

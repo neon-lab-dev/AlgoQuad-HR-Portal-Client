@@ -14,19 +14,19 @@ import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
-import StatusCard from "../../../components/Dashboard/SharedComponents/StatusCard/StatusCard";
-import DashboardContainer from "../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
-import SearchInput from "../../../components/Reusable/SearchInput/SearchInput";
-import Button from "../../../components/Reusable/Button/Button";
-import Table from "../../../components/Reusable/Table/Table";
-import { formatDate } from "../../../utils/formatDate";
-import JobStatusBadge from "../../../components/Reusable/JobStatusBadge/JobStatusBadge";
+import StatusCard from "../../../../components/Dashboard/SharedComponents/StatusCard/StatusCard";
+import DashboardContainer from "../../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
+import SearchInput from "../../../../components/Reusable/SearchInput/SearchInput";
+import Button from "../../../../components/Reusable/Button/Button";
+import Table from "../../../../components/Reusable/Table/Table";
+import { formatDate } from "../../../../utils/formatDate";
+import JobStatusBadge from "../../../../components/Reusable/JobStatusBadge/JobStatusBadge";
 import {
   useDeleteJobMutation,
   useGetAllJobsQuery,
   useUpdateJobMutation,
-} from "../../../redux/Features/Job/jobApi";
-import type { TJob } from "../../../types/job.types";
+} from "../../../../redux/Features/Job/jobApi";
+import type { TJob } from "../../../../types/job.types";
 import toast from "react-hot-toast";
 
 const Jobs = () => {

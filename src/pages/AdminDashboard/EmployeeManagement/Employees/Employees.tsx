@@ -1,0 +1,294 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
+import {
+  FiList,
+  FiUserCheck,
+  FiUserX,
+  FiUsers,
+  FiEdit2,
+  FiEye,
+  FiToggleLeft,
+  FiToggleRight,
+} from "react-icons/fi";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import toast from "react-hot-toast";
+
+import StatusCard from "../../../../components/Dashboard/SharedComponents/StatusCard/StatusCard";
+import DashboardContainer from "../../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
+import SearchInput from "../../../../components/Reusable/SearchInput/SearchInput";
+import Button from "../../../../components/Reusable/Button/Button";
+import Table from "../../../../components/Reusable/Table/Table";
+import { formatDate } from "../../../../utils/formatDate";
+import { useGetAllEmployeesQuery } from "../../../../redux/Features/Employee/employeeApi";
+import type { TEmployee } from "../../../../types/employee.types";
+import { useNavigate } from "react-router-dom";
+
+const Employees = () => {
+    const navigate = useNavigate();
+  // ---- State ----
+  const [searchValue, setSearchValue] = useState("");
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+  const skip = (page - 1) * limit;
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const { data, isLoading, isFetching } = useGetAllEmployeesQuery({
+    keyword: searchValue,
+    skip,
+    limit,
+    status: statusFilter,
+    department: departmentFilter,
+  });
+  const employee = data?.data || [];
+
+  // ---- Stats ----
+  const stats = {
+    total: employee.length,
+    active: employee.filter((e: TEmployee) => e.accountStatus === "Active")
+      .length,
+    inactive: employee.filter((e: TEmployee) => e.accountStatus === "Inactive")
+      .length,
+    interns: employee.filter((e: TEmployee) => e.employmentType === "Intern")
+      .length,
+  };
+
+  // ---- Actions ----
+  const handleToggleStatus = (id: string, currentStatus: string) => {
+    const nextStatus = currentStatus === "Active" ? "Inactive" : "Active";
+    toast.success(`Employee portal access marked as ${nextStatus}. (Mock)`);
+    // TODO: await updateEmployeeStatus({ id, status: nextStatus }).unwrap()
+  };
+
+  // ---- Table Data ----
+  const tableData = employee?.map((emp: TEmployee) => ({
+    _id: emp._id,
+    name: emp.userId.name,
+    employeeId: emp.employeeId,
+    contact: emp.userId.email,
+    department: emp.department,
+    designation: emp.designation,
+    joiningDate: formatDate(emp.joiningDate),
+    employmentType: emp.employmentType,
+    status: emp.accountStatus,
+    _raw: emp,
+  }));
+
+  const columns = [
+    { key: "employeeId", label: "Emp ID" },
+    {
+      key: "name",
+      label: "Name / Email",
+      render: (row: any) => (
+        <div className="flex flex-col">
+          <span className="font-medium text-neutral-40">{row.name}</span>
+          <span className="text-xs text-neutral-65">{row.contact}</span>
+        </div>
+      ),
+    },
+    { key: "department", label: "Department" },
+    { key: "designation", label: "Designation" },
+    { key: "employmentType", label: "Type" },
+    { key: "joiningDate", label: "Joined" },
+    {
+      key: "status",
+      label: "Access",
+      render: (row: any) => (
+        <span
+          className={`px-2 py-0.5 text-xs font-medium rounded-full border ${
+            row.status === "Active"
+              ? "bg-green-100 text-green-700 border-green-300"
+              : "bg-red-100 text-red-700 border-red-300"
+          }`}
+        >
+          {row.status}
+        </span>
+      ),
+    },
+  ];
+
+  const actions = [
+    {
+      icon: <FiEye />,
+      label: "View Profile",
+      onClick: (row: any) =>
+        navigate(`/dashboard/admin/employee/${row._id}`),
+    },
+    {
+      icon: <FiEdit2 />,
+      label: "Edit Employee",
+      onClick: (row: any) => toast.success(`Editing ${row.name} (Mock)`), // Replace with navigate(`/dashboard/admin/employee/edit/${row._id}`)
+      className: "text-blue-600",
+    },
+    {
+      icon: (row: any) =>
+        row.status === "Active" ? <FiToggleRight /> : <FiToggleLeft />,
+      label: "Toggle Access",
+      onClick: (row: any) => handleToggleStatus(row._id, row.status),
+      className: "text-indigo-600",
+    },
+  ];
+
+  // ---- Export ----
+  const handleExport = () => {
+    if (!tableData?.length) return;
+
+    const exportColumns = columns.filter((c) => c.key !== "status");
+
+    const exportData = tableData.map((row: any) => {
+      const out: Record<string, any> = {};
+      exportColumns.forEach((col) => {
+        out[col.label] = row[col.key] ?? "";
+      });
+      out["Portal Access"] = row.status;
+      return out;
+    });
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Employees");
+    const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(
+      new Blob([buf], { type: "application/octet-stream" }),
+      "employees.xlsx",
+    );
+  };
+
+  return (
+    <div>
+      {/* ---- Stats Row ---- */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <StatusCard
+          icon={<FiList size={28} />}
+          value={stats.total}
+          label="Total Employees"
+          badgeText="All"
+          badgeBg="bg-blue-100"
+          badgeBorder="border-blue-400"
+          badgeTextColor="text-blue-600"
+        />
+        <StatusCard
+          icon={<FiUserCheck size={28} />}
+          value={stats.active}
+          label="Active Access"
+          badgeText="Live"
+          badgeBg="bg-green-100"
+          badgeBorder="border-green-400"
+          badgeTextColor="text-green-600"
+        />
+        <StatusCard
+          icon={<FiUserX size={28} />}
+          value={stats.inactive}
+          label="Deactivated"
+          badgeBg="bg-red-100"
+          badgeBorder="border-red-400"
+          badgeTextColor="text-red-600"
+          badgeText="Revoked"
+        />
+        <StatusCard
+          icon={<FiUsers size={28} />}
+          value={stats.interns}
+          label="Interns"
+          badgeBg="bg-purple-100"
+          badgeBorder="border-purple-400"
+          badgeTextColor="text-purple-600"
+          badgeText="Temp"
+        />
+      </div>
+
+      {/* ---- Main Panel ---- */}
+      <div className="mt-6 font-Montserrat">
+        <DashboardContainer>
+          <div className="font-Montserrat flex flex-col gap-6">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row gap-5 lg:gap-0 justify-between items-start">
+              <div>
+                <h1 className="text-xl font-bold text-neutral-40">
+                  Employee Management
+                </h1>
+                <p className="text-neutral-65">
+                  Manage employee accounts and portal access
+                </p>
+              </div>
+
+              <div className="flex justify-between items-center gap-4 flex-wrap">
+                <div className="flex items-center gap-3 md:gap-2 flex-wrap">
+                  <SearchInput
+                    value={searchValue}
+                    onChange={(val) => {
+                      setSearchValue(val);
+                      setPage(1);
+                    }}
+                    placeholder="Search by name, email, ID..."
+                  />
+
+                  {/* Status filter */}
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => {
+                      setStatusFilter(e.target.value);
+                      setPage(1);
+                    }}
+                    className="py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary-10 focus:outline-none px-3 text-sm text-neutral-40 outline-none cursor-pointer"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+
+                  {/* Department filter */}
+                  <select
+                    value={departmentFilter}
+                    onChange={(e) => {
+                      setDepartmentFilter(e.target.value);
+                      setPage(1);
+                    }}
+                    className="py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary-10 focus:outline-none px-3 text-sm text-neutral-40 outline-none cursor-pointer"
+                  >
+                    <option value="all">All Departments</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Design">Design</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="HR">HR</option>
+                  </select>
+
+                  <Button
+                    variant="secondary"
+                    onClick={handleExport}
+                    label="Export"
+                    classNames="w-fit py-2 px-3"
+                  />
+                  <Button
+                    variant="primary"
+                    onClick={() =>
+                      toast.success("Open Add Employee Modal (Mock)")
+                    }
+                    label="+ Add Employee"
+                    classNames="w-fit py-2 px-4 border-2 border-primary-10"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Table */}
+            <Table
+              columns={columns}
+              data={tableData}
+              actions={actions}
+              rowKey="_id"
+              isLoading={isLoading || isFetching}
+              page={page}
+              onPageChange={setPage}
+              totalPages={data?.data?.meta?.totalPages || 1}
+              limit={limit}
+              setLimit={setLimit}
+            />
+          </div>
+        </DashboardContainer>
+      </div>
+    </div>
+  );
+};
+
+export default Employees;

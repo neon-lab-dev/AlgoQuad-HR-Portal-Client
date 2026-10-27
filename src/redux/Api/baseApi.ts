@@ -60,6 +60,7 @@ export const baseApi = createApi({
     "user",
     "jobs",
     "application",
+    "employee"
   ],
   endpoints: () => ({}),
 });

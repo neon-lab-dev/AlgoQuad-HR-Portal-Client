@@ -11,15 +11,15 @@ import {
   FiClock,
 } from "react-icons/fi";
 
-import DashboardContainer from "../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
-import Button from "../../../components/Reusable/Button/Button";
-import JobStatusBadge from "../../../components/Reusable/JobStatusBadge/JobStatusBadge";
-import { formatDate } from "../../../utils/formatDate";
+import DashboardContainer from "../../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
+import Button from "../../../../components/Reusable/Button/Button";
+import JobStatusBadge from "../../../../components/Reusable/JobStatusBadge/JobStatusBadge";
+import { formatDate } from "../../../../utils/formatDate";
 import {
   useGetSingleJobByIdQuery,
   useUpdateJobMutation,
-} from "../../../redux/Features/Job/jobApi";
-import Loader from "../../../components/Shared/Loader/Loader";
+} from "../../../../redux/Features/Job/jobApi";
+import Loader from "../../../../components/Shared/Loader/Loader";
 
 const JobDetails = () => {
   const { id } = useParams<{ id: string }>();

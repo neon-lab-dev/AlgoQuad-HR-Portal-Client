@@ -13,16 +13,16 @@ import {
   FiEdit3,
   FiStar,
 } from "react-icons/fi";
-import StatusCard from "../../../components/Dashboard/SharedComponents/StatusCard/StatusCard";
-import DashboardContainer from "../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
-import SearchInput from "../../../components/Reusable/SearchInput/SearchInput";
-import Button from "../../../components/Reusable/Button/Button";
-import Table from "../../../components/Reusable/Table/Table";
-import CandidateStatusBadge from "../../../components/Reusable/CandidateStatusBadge/CandidateStatusBadge";
-import { formatDate } from "../../../utils/formatDate";
-import ChangeApplicationStatusModal from "../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
-import { useGetAllApplicationsQuery } from "../../../redux/Features/Application/applicationApi";
-import type { TApplication } from "../../../types/application.types";
+import StatusCard from "../../../../components/Dashboard/SharedComponents/StatusCard/StatusCard";
+import DashboardContainer from "../../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
+import SearchInput from "../../../../components/Reusable/SearchInput/SearchInput";
+import Button from "../../../../components/Reusable/Button/Button";
+import Table from "../../../../components/Reusable/Table/Table";
+import CandidateStatusBadge from "../../../../components/Reusable/CandidateStatusBadge/CandidateStatusBadge";
+import { formatDate } from "../../../../utils/formatDate";
+import ChangeApplicationStatusModal from "../../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
+import { useGetAllApplicationsQuery } from "../../../../redux/Features/Application/applicationApi";
+import type { TApplication } from "../../../../types/application.types";
 
 const STATUS_OPTIONS = [
   "New",
