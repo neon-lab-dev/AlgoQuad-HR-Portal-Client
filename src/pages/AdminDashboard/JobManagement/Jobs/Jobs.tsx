@@ -88,6 +88,7 @@ const Jobs = () => {
       openings: job.openings,
       location: job.location,
       employmentType: job.employmentType,
+      applicationDeadline : formatDate(job.applicationDeadline),
       status: job.status, // rendered via custom component
       createdDate: formatDate(job.createdAt),
     })) || [];
@@ -99,6 +100,7 @@ const Jobs = () => {
     { key: "openings", label: "Openings" },
     { key: "location", label: "Location" },
     { key: "employmentType", label: "Type" },
+    { key: "applicationDeadline", label: "Deadline" },
     {
       key: "status",
       label: "Status",

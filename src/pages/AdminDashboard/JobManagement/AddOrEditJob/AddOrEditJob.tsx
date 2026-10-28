@@ -52,6 +52,7 @@ export type TJobFormValues = {
   skills: string[];
   responsibilities: string[];
   qualifications: string[];
+  applicationDeadline?: string;
 };
 
 const EMPTY: TJobFormValues = {
@@ -65,6 +66,7 @@ const EMPTY: TJobFormValues = {
   skills: [""],
   responsibilities: [""],
   qualifications: [""],
+  applicationDeadline: "",
 };
 
 const AddOrEditJob = () => {
@@ -124,6 +126,9 @@ const AddOrEditJob = () => {
         qualifications: job.qualifications?.length
           ? job.qualifications
           : [""],
+       applicationDeadline: job.applicationDeadline
+  ? new Date(job.applicationDeadline).toISOString().split("T")[0]
+  : "",
       });
     }
   }, [isEdit, job, reset]);
@@ -138,6 +143,7 @@ const AddOrEditJob = () => {
       employmentType: data.employmentType,
       status: data.status,
       description: data.description.trim(),
+      applicationDeadline: data.applicationDeadline,
       skills: (data.skills || []).map((s) => s.trim()).filter(Boolean),
       responsibilities: (data.responsibilities || [])
         .map((s) => s.trim())
@@ -236,6 +242,14 @@ const AddOrEditJob = () => {
               error={errors.location}
               isRequired
               {...register("location", { required: "Location is required" })}
+            />
+
+            <TextInput
+              label="Application Deadline"
+              type="date"
+              error={errors.applicationDeadline}
+              isRequired
+              {...register("applicationDeadline", { required: "Deadline is required" })}
             />
 
             <SelectDropdown

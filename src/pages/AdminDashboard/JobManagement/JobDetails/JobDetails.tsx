@@ -9,6 +9,7 @@ import {
   FiCalendar,
   FiCheckCircle,
   FiClock,
+  FiHash,
 } from "react-icons/fi";
 
 import DashboardContainer from "../../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
@@ -93,44 +94,93 @@ const JobDetails = () => {
 
       {/* ---- Job header card ---- */}
       <DashboardContainer>
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex-1 min-w-0">
-            {/* Title + badges */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-bold text-neutral-40">
-                {job.title}
-              </h1>
-              <JobStatusBadge status={job?.status as any} />
+        <div>
+          {/* Top Row: Title, Status, and Action Buttons (if any) */}
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 flex-wrap mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-neutral-40">
+                  {job.title}
+                </h1>
+                <JobStatusBadge status={job?.status as any} />
+              </div>
+
+              <p className="text-sm text-neutral-65 max-w-2xl">
+                Posted{" "}
+                <span className="font-medium text-neutral-40">
+                  {job.createdBy}
+                </span>{" "}
+                on {formatDate(job.createdAt)}
+              </p>
             </div>
 
-            <p className="text-sm text-neutral-65 mt-1">
-              {job._id} · Created by {job.createdBy} ·{" "}
-              {formatDate(job.createdAt)}
-            </p>
+            {/* Optional: Add Edit/Share buttons here if needed */}
+            {/* <div className="flex items-center gap-2">
+      <Button variant="secondary" label="Edit Job" />
+    </div> */}
+          </div>
 
-            {/* Meta strip */}
-            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-65">
-              <span className="inline-flex items-center gap-2">
-                <FiBriefcase size={15} className="text-neutral-50" />
+          {/* Divider */}
+          <div className="h-px bg-neutral-98 my-6" />
+
+          {/* Middle Row: Quick Meta Facts Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-4">
+            {/* Department */}
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold text-neutral-65 uppercase tracking-wide flex items-center gap-1.5">
+                <FiBriefcase size={12} /> Department
+              </span>
+              <span className="text-sm font-medium text-neutral-40">
                 {job.department}
               </span>
-              <span className="inline-flex items-center gap-2">
-                <FiMapPin size={15} className="text-neutral-50" />
+            </div>
+
+            {/* Location */}
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold text-neutral-65 uppercase tracking-wide flex items-center gap-1.5">
+                <FiMapPin size={12} /> Location
+              </span>
+              <span className="text-sm font-medium text-neutral-40">
                 {job.location}
               </span>
-              <span className="inline-flex items-center gap-2">
-                <FiUsers size={15} className="text-neutral-50" />
-                {job.openings} opening{job.openings > 1 ? "s" : ""}
+            </div>
+
+            {/* Openings */}
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold text-neutral-65 uppercase tracking-wide flex items-center gap-1.5">
+                <FiUsers size={12} /> Openings
               </span>
-              <span className="inline-flex items-center gap-2">
-                <FiCalendar size={15} className="text-neutral-50" />
-                {job.employmentType}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <FiClock size={15} className="text-neutral-50" />
-                Updated {formatDate(job.updatedAt)}
+              <span className="text-sm font-medium text-neutral-40">
+                {job.openings} position{job.openings > 1 ? "s" : ""}
               </span>
             </div>
+
+            {/* Employment Type */}
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold text-neutral-65 uppercase tracking-wide flex items-center gap-1.5">
+                <FiClock size={12} /> Type
+              </span>
+              <span className="text-sm font-medium text-neutral-40">
+                {job.employmentType}
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom Row: Audit Info (Subtle background) */}
+          <div className="mt-8 bg-neutral-105 rounded-xl p-4 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-neutral-65 border border-neutral-98">
+            <span className="flex items-center gap-1.5">
+              <FiHash size={13} className="text-neutral-50" />
+              <span className="font-medium text-neutral-40">Job ID:</span>{" "}
+              {job._id}
+            </span>
+
+            <span className="flex items-center gap-1.5">
+              <FiCalendar size={13} className="text-neutral-50" />
+              <span className="font-medium text-neutral-40">Deadline:</span>
+              <span className="text-orange-600 font-medium">
+                {formatDate(job.applicationDeadline)}
+              </span>
+            </span>
           </div>
         </div>
 

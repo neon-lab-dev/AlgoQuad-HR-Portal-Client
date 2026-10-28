@@ -15,6 +15,9 @@ import {
   useUpdateEmployeeMutation,
 } from "../../../../redux/Features/Employee/employeeApi";
 import { DEPARTMENT_OPTIONS } from "../../JobManagement/AddOrEditJob/AddOrEditJob";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "../../../../redux/Features/Auth/authSlice";
+import type { TUser } from "../../../../types/user.types";
 
 // ---- Options ----
 const EMPLOYMENT_TYPE_OPTIONS = [
@@ -24,7 +27,8 @@ const EMPLOYMENT_TYPE_OPTIONS = [
   "Intern",
 ];
 const GENDER_OPTIONS = ["Male", "Female", "Other"];
-const ROLE_OPTIONS = ["hr", "employee"];
+const HR_ROLE_OPTIONS = ["hr", "employee"];
+const ADMIN_ROLE_OPTIONS = ["admin", "hr", "employee"];
 
 export type TEmployeeFormValues = {
   // User fields
@@ -65,6 +69,8 @@ const AddOrEditEmployee = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
+
+  const loggedInUser = useSelector(useCurrentUser) as TUser;
 
   // ---- Fetch single employee (edit mode only) ----
   const { data: empData, isLoading: isLoadingEmp } =
@@ -248,12 +254,15 @@ const AddOrEditEmployee = () => {
               <TextInput
                 label="Email"
                 type="email"
-                placeholder="e.g. arjun@algoquad.in"
+                placeholder="e.g. arjun@algoquad.com"
                 error={errors.email}
                 isRequired
                 {...register("email", {
                   required: "Email is required",
-                  pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@algoquad\.com$/i,
+                    message: "Must be a valid @algoquad.com email address",
+                  },
                 })}
               />
               <TextInput
@@ -273,7 +282,11 @@ const AddOrEditEmployee = () => {
                 label="Role"
                 {...register("role", { required: "Role is required" })}
                 error={errors.role}
-                options={ROLE_OPTIONS}
+                options={
+                  loggedInUser?.role === "hr"
+                    ? HR_ROLE_OPTIONS
+                    : ADMIN_ROLE_OPTIONS
+                }
               />
               <TextInput
                 label="City"

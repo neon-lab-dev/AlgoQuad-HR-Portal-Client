@@ -1,9 +1,15 @@
 // src/pages/hr/AddCandidate.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { FiArrowLeft, FiStar, FiFileText } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiStar,
+  FiFileText,
+  FiUploadCloud,
+  FiX,
+} from "react-icons/fi";
 import toast from "react-hot-toast";
 
 import DashboardContainer from "../../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
@@ -31,7 +37,6 @@ export type TAddCandidateFormValues = {
   phoneNumber: string;
   jobId: string;
   experience: string;
-  resumeUrl: string;
   source: string;
   status: string;
   resumeRating: number;
@@ -45,7 +50,6 @@ const EMPTY: TAddCandidateFormValues = {
   phoneNumber: "",
   jobId: "",
   experience: "",
-  resumeUrl: "",
   source: "HR",
   status: "New",
   resumeRating: 0,
@@ -58,6 +62,11 @@ const AddOrEditCandidate = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [addCandidate, { isLoading: isAdding }] = useAddCandidateMutation();
+
+  // ---- File Upload State ----
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [resumeError, setResumeError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     register,
@@ -74,7 +83,7 @@ const AddOrEditCandidate = () => {
   });
   const rating = watch("resumeRating");
 
-  // Pre-fill jobId if passed in URL (e.g., /hr/candidates/create?job=JOB-001)
+  // Pre-fill jobId if passed in URL
   useEffect(() => {
     const jobParam = searchParams.get("job");
     if (jobParam) {
@@ -82,26 +91,72 @@ const AddOrEditCandidate = () => {
     }
   }, [searchParams, setValue]);
 
+  // ---- File Upload Handler ----
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setResumeError(null);
+
+    if (!file) {
+      setResumeFile(null);
+      return;
+    }
+
+    // Validate strict PDF only
+    if (file.type !== "application/pdf") {
+      setResumeError("Only PDF files are allowed.");
+      e.target.value = "";
+      return;
+    }
+
+    // Validate size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      setResumeError("File must be smaller than 5 MB.");
+      e.target.value = "";
+      return;
+    }
+
+    setResumeFile(file);
+  };
+
+  const clearFile = () => {
+    setResumeFile(null);
+    setResumeError(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   // ---- Submit ----
   const handleFormSubmit = async (data: TAddCandidateFormValues) => {
-    // Construct exact payload matching your backend
-    const payload = {
-      name: data.name,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-      jobId: jobId,
-      experience: data.experience,
-      resumeUrl: data.resumeUrl,
-      source: data.source,
-      status: data.status,
-      resumeRating: Number(data.resumeRating),
-      skills: (data.skills || []).map((s) => s.trim()).filter(Boolean),
-    };
+    if (!resumeFile) {
+      setResumeError("Please upload the candidate's PDF resume.");
+      return;
+    }
+
+    // Use FormData because we are sending a file
+    const formData = new FormData();
+    
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("phoneNumber", data.phoneNumber);
+    formData.append("jobId", jobId!); 
+    formData.append("experience", data.experience);
+    formData.append("source", data.source);
+    formData.append("status", data.status);
+    formData.append("resumeRating", String(data.resumeRating));
+    formData.append("notes", data.notes);
+    
+    // Append skills array as a JSON string (matching your backend)
+    formData.append(
+      "skills", 
+      JSON.stringify((data.skills || []).map((s) => s.trim()).filter(Boolean))
+    );
+
+    // Append the PDF File (Key must be "resume" to match backend multer)
+    formData.append("file", resumeFile);
 
     try {
-      await addCandidate(payload).unwrap();
+      await addCandidate(formData).unwrap();
       toast.success("Candidate added successfully.");
-      navigate(`/dashboard/admin/applications/${jobId}`); // Redirect to applications list
+      navigate(`/dashboard/admin/applications/${jobId}`);
     } catch (err: any) {
       console.error(err);
       toast.error(err?.data?.message || "Failed to add candidate.");
@@ -254,36 +309,58 @@ const AddOrEditCandidate = () => {
             </div>
           </Section>
 
-          {/* ================= SECTION 4: Resume URL ================= */}
+          {/* ================= SECTION 4: Resume Upload ================= */}
           <Section title="Resume / CV">
             <div className="flex flex-col gap-2">
-              <div className="relative">
-                <FiFileText
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-50"
-                />
-                <input
-                  type="url"
-                  placeholder="https://drive.google.com/... or https://example.com/resume.pdf"
-                  {...register("resumeUrl", {
-                    required: "Resume URL is required",
-                    pattern: {
-                      value: /^https?:\/\/.+/i,
-                      message:
-                        "Must be a valid URL starting with http:// or https://",
-                    },
-                  })}
-                  className="w-full border border-neutral-95 rounded-lg pl-9 pr-3 py-3.5 text-sm text-neutral-40 placeholder:text-neutral-65 outline-none focus:border-primary-10"
-                />
-              </div>
-              <p className="text-xs text-neutral-65">
-                Paste a link to a Google Drive, Dropbox, LinkedIn, or any
-                publicly accessible PDF.
-              </p>
-              {errors.resumeUrl && (
-                <p className="text-xs text-red-500">
-                  {errors.resumeUrl.message}
-                </p>
+              {!resumeFile ? (
+                <label
+                  htmlFor="resume-upload"
+                  className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-neutral-98 rounded-xl px-4 py-8 cursor-pointer hover:border-primary-10 hover:bg-neutral-105/50 transition-colors"
+                >
+                  <FiUploadCloud size={28} className="text-neutral-50" />
+                  <p className="text-sm text-neutral-40 font-medium">
+                    Click to upload candidate's resume
+                  </p>
+                  <p className="text-xs text-neutral-65">
+                    PDF format only. Max 5 MB.
+                  </p>
+                  <input
+                    id="resume-upload"
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </label>
+              ) : (
+                <div className="flex items-center justify-between gap-3 border border-neutral-98 rounded-xl px-4 py-3 bg-neutral-105">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-12 rounded bg-white border border-neutral-98 flex items-center justify-center shrink-0">
+                      <FiFileText className="text-red-500" size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-neutral-40 truncate">
+                        {resumeFile.name}
+                      </p>
+                      <p className="text-xs text-neutral-65">
+                        {(resumeFile.size / 1024).toFixed(0)} KB · PDF
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={clearFile}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                    aria-label="Remove file"
+                  >
+                    <FiX size={16} />
+                  </button>
+                </div>
+              )}
+              
+              {resumeError && (
+                <p className="text-xs text-red-500 mt-1">{resumeError}</p>
               )}
             </div>
           </Section>
@@ -295,7 +372,7 @@ const AddOrEditCandidate = () => {
               label="Cancel"
               type="button"
               classNames="py-2 px-4"
-              onClick={() => navigate("/hr/applications")}
+              onClick={() => navigate(`/dashboard/admin/applications/${jobId}`)}
             />
             <Button
               variant="primary"

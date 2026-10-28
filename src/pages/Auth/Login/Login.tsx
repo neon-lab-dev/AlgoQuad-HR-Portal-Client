@@ -2,7 +2,7 @@
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { useLoginMutation } from "../../../redux/Features/Auth/authApi";
@@ -57,7 +57,7 @@ const Login = () => {
         dispatch(setUser({ user, token: response?.data?.accessToken }));
         if (user?.isFirstLogin) {
           localStorage.setItem("resetEmail", user?.email);
-          navigate("/reset-password");
+          navigate("/reset-password?purpose=firstTimeLogin");
         } else if (user?.role === "admin") {
           navigate("/dashboard/admin");
         } else if (user?.role === "hr") {
@@ -75,7 +75,7 @@ const Login = () => {
       <div className="rounded-2xl p-6 w-full md:w-[400px] lg:w-[480px] bg-white">
         <form
           onSubmit={handleSubmit(handleLogin)}
-          className="flex flex-col gap-6 lg:gap-5"
+          className="flex flex-col gap-6"
         >
           <h1 className="text-neutral-140 leading-5 font-semibold text-center text-xl mb-3">
             Welcome Back
@@ -107,9 +107,9 @@ const Login = () => {
             />
 
             <div className="flex justify-end">
-              <button className="text-sm text-primary-10 font-semibold hover:underline cursor-pointer">
+              <Link to="/forgot-password" className="text-sm text-primary-10 font-semibold hover:underline cursor-pointer">
                 Forgot Password?
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -120,15 +120,6 @@ const Login = () => {
             classNames="w-full"
             isLoading={isLoading}
           />
-          {/* <p className="text-neutral-140 leading-5 mt-2 text-center">
-          New to HanjiFinance?{" "}
-          <button
-            type="button"
-            className="text-primary-20 font-semibold hover:underline cursor-pointer"
-          >
-            Signup
-          </button>
-        </p> */}
         </form>
       </div>
     </div>

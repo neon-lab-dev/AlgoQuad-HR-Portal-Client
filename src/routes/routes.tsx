@@ -16,6 +16,8 @@ import EmployeeProfile from "../pages/AdminDashboard/EmployeeManagement/Employee
 import AddOrEditEmployee from "../pages/AdminDashboard/EmployeeManagement/AddOrEditEmployee/AddOrEditEmployee";
 import MyProfile from "../pages/AdminDashboard/MyProfile/MyProfile";
 import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
+import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
+import VerifyOTP from "../pages/Auth/VerifyOTP/VerifyOTP";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +29,18 @@ export const router = createBrowserRouter([
         path: "/",
         element: <Login />,
       },
+      {
+        path: "/forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "/verify-otp",
+        element: <VerifyOTP />,
+      },
+       {
+    path: "reset-password",
+    element: <ResetPassword />,
+  },
       {
         path: "/coming-soon",
         element: <ComingSoon />,
@@ -176,8 +190,5 @@ export const router = createBrowserRouter([
     path: "admin",
     element: <Login />,
   },
-  {
-    path: "reset-password",
-    element: <ResetPassword />,
-  },
+ 
 ]);

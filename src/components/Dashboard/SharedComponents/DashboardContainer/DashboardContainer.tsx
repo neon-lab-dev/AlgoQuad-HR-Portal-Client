@@ -12,7 +12,7 @@ interface DashboardContainerProps {
 
 const DashboardContainer = ({ children, headerText, btn, btnLink, className ,div}: DashboardContainerProps) => {
   return (
-    <div className={`bg-transparent md:bg-white rounded-2xl py-0 md:py-4 px-0 md:px-4 font-Montserrat ${className}`}>
+    <div className={`bg-transparent md:bg-white rounded-2xl py-0 md:py-4 xl:py-6 px-0 md:px-4 xl:px-6 font-Montserrat ${className}`}>
       {(headerText || btn) && (
         <div className="flex justify-between items-center mb-4">
           {headerText && <h2 className="text-xl leading-[22px] font-semibold mt-2 accent-5">{headerText}</h2>}

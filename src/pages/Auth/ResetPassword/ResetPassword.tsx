@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import PasswordInput from "../../../components/Reusable/PasswordInput/PasswordInput";
@@ -13,6 +13,10 @@ type TResetPasswordForm = {
 };
 
 const ResetPassword = () => {
+  const [searchParams] = useSearchParams();
+
+  const purpose = searchParams.get("purpose");
+
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
@@ -45,7 +49,7 @@ const ResetPassword = () => {
       const payload = {
         email: email,
         newPassword: data.newPassword,
-        purpose : "firstTimeLogin"
+        purpose: purpose,
       };
 
       const response = await resetPassword(payload).unwrap();
