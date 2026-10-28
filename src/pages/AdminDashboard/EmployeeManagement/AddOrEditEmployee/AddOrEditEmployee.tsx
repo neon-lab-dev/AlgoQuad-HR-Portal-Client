@@ -24,6 +24,7 @@ const EMPLOYMENT_TYPE_OPTIONS = [
   "Intern",
 ];
 const GENDER_OPTIONS = ["Male", "Female", "Other"];
+const ROLE_OPTIONS = ["hr", "employee"];
 
 export type TEmployeeFormValues = {
   // User fields
@@ -267,6 +268,12 @@ const AddOrEditEmployee = () => {
                 {...register("gender", { required: "Gender is required" })}
                 error={errors.gender}
                 options={GENDER_OPTIONS}
+              />
+              <SelectDropdown
+                label="Role"
+                {...register("role", { required: "Role is required" })}
+                error={errors.role}
+                options={ROLE_OPTIONS}
               />
               <TextInput
                 label="City"

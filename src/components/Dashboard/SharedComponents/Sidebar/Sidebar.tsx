@@ -8,7 +8,7 @@ import {
 } from "../../../../redux/Features/Auth/authSlice";
 import type { TUser } from "../../../../types/user.types";
 import Cookies from "js-cookie";
-import { hrMenus } from "./sidebarMenus";
+import { adminMenus, employeeMenus, hrMenus } from "./sidebarMenus";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -18,8 +18,7 @@ const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
   const isActive = (path: string): boolean => location.pathname === path;
 
-  // const sidebarLinks = user?.role === "hr" ? hrMenus : userMenus;
-  const sidebarLinks = hrMenus;
+  const sidebarLinks = user?.role === "hr" ? hrMenus : user?.role === "admin" ? adminMenus : employeeMenus;
 
   const handleLogout = async () => {
     dispatch(setUser({ user: null, token: null }));

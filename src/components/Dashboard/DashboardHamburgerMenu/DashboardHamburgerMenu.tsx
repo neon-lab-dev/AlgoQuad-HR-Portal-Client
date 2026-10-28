@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ICONS } from "../../../assets";
 import { useEffect, useState } from "react";
 import { TbLogout2 } from "react-icons/tb";
-import { userMenus } from "../SharedComponents/Sidebar/sidebarMenus";
+import { hrMenus } from "../SharedComponents/Sidebar/sidebarMenus";
 
 const DashboardHamburgerMenu = () => {
   const location = useLocation();
@@ -30,10 +30,7 @@ const DashboardHamburgerMenu = () => {
   }, [isHamburgerOpen]);
   return (
     <div className="relative hamburgerMenu flex xl:hidden">
-      <button
-        onClick={toggleHamburgerMenu}
-        className="size-7 cursor-pointer"
-      >
+      <button onClick={toggleHamburgerMenu} className="size-7 cursor-pointer">
         <img src={ICONS.menu} alt="menu-icon" />
       </button>
 
@@ -51,12 +48,11 @@ const DashboardHamburgerMenu = () => {
           isHamburgerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-
         <hr className="border border-neutral-50/30 w-full" />
 
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            {userMenus?.map((link:any) => (
+            {hrMenus?.map((link: any) => (
               <Link
                 key={link?.name}
                 to={link?.link}

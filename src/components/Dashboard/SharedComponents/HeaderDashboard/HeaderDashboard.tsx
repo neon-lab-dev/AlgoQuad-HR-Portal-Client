@@ -34,6 +34,8 @@ const HeaderDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const profilePath = user?.role === "hr" ? "/dashboard/hr/me" : "/dashboard/employee/me";
+
   return (
     <div className="bg-white p-6 border-b border-b-neutral-98 text-3xl flex justify-between items-center pr-4 sticky top-0 z-20 font-Montserrat">
       <DashboardHamburgerMenu />
@@ -43,7 +45,7 @@ const HeaderDashboard = () => {
       </div>
       <ul className="flex gap-5">
         <li>
-          <Link to="/dashboard">
+          <Link to={profilePath}>
             <img src={ICONS.user} className="size-6" />
           </Link>
         </li>

@@ -4,7 +4,7 @@ export type TUser = {
   name: string;
   email: string;
   phoneNumber:string;
-  role: "hr" | "user" | "moderator";
+  role: "hr" | "employee" | "admin";
   avatar: string;
 };
 

@@ -55,8 +55,16 @@ const Login = () => {
 
       if (response?.success) {
         dispatch(setUser({ user, token: response?.data?.accessToken }));
-        toast.success(response?.message);
-        navigate("/dashboard/admin");
+        if (user?.isFirstLogin) {
+          localStorage.setItem("resetEmail", user?.email);
+          navigate("/reset-password");
+        } else if (user?.role === "admin") {
+          navigate("/dashboard/admin");
+        } else if (user?.role === "hr") {
+          navigate("/dashboard/hr");
+        } else if (user?.role === "employee") {
+          navigate("/dashboard/employee");
+        };
       }
     } catch (err: any) {
       toast.error(err?.data?.message || "Something went wrong!");
@@ -98,11 +106,11 @@ const Login = () => {
               setIsPasswordVisible={setIsPasswordVisible}
             />
 
-            {/* <div className="flex justify-end">
-            <button className="text-primary-20 font-semibold hover:underline cursor-pointer">
-              Forgot Password?
-            </button>
-          </div> */}
+            <div className="flex justify-end">
+              <button className="text-sm text-primary-10 font-semibold hover:underline cursor-pointer">
+                Forgot Password?
+              </button>
+            </div>
           </div>
 
           <Button

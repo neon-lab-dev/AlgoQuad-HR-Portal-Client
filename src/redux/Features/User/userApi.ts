@@ -4,7 +4,7 @@ const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getMe: builder.query({
       query: () => ({
-        url: "/user/me",
+        url: "/employee/my-profile",
         method: "GET",
         credentials: "include",
       }),
@@ -20,31 +20,10 @@ const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["user"],
     }),
-
-    getMyActivity: builder.query({
-      query: ({ page = 1, limit = 10 }) => ({
-        url: `/activity/my-activities`,
-        method: "GET",
-        credentials: "include",
-        params: { page, limit },
-      }),
-      providesTags: ["user"],
-    }),
-
-    getRazorpayKey: builder.query({
-      query: () => ({
-        url: "/get-key",
-        method: "GET",
-        credentials: "include",
-      }),
-      providesTags: ["user"],
-    }),
   }),
 });
 
 export const {
   useGetMeQuery,
   useUpdateProfileMutation,
-  useGetMyActivityQuery,
-  useGetRazorpayKeyQuery,
 } = userApi;

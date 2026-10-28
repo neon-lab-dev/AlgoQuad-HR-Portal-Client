@@ -1,49 +1,30 @@
 import {
   FiHome,
   FiMail,
-  FiBookOpen,
-  FiUserCheck,
   FiUsers,
   FiUser,
-  FiShoppingBag,
-  FiHelpCircle,
 } from "react-icons/fi";
 
-export const userMenus = [
-  { name: "Dashboard", link: "/dashboard", icon: FiHome },
+export const hrMenus = [
+  { name: "Dashboard", link: "/dashboard/hr", icon: FiHome },
   {
-    name: "My Courses",
-    link: "/dashboard/my-courses",
-    icon: FiBookOpen,
+    name: "Jobs",
+    link: "/dashboard/hr/jobs",
+    icon: FiMail,
   },
   {
-    name: "My Orders",
-    link: "/dashboard/my-orders",
-    icon: FiShoppingBag,
-  },
-  {
-    name: "Consultations",
-    link: "/dashboard/consultations",
-    icon: FiUserCheck,
-  },
-  {
-    name: "My Subscriptions",
-    link: "/dashboard/my-subscriptions",
+    name: "Employees",
+    link: "/dashboard/hr/employees",
     icon: FiUsers,
   },
-  {
-    name: "Help Desk",
-    link: "/dashboard/helpdesk",
-    icon: FiHelpCircle,
-  },
-  {
-    name: "My Profile",
-    link: "/dashboard/certificates",
-    icon: FiUser,
-  },
+  // {
+  //   name: "Queries",
+  //   link: "/dashboard/hr/queries",
+  //   icon: FiHelpCircle,
+  // },
 ];
 
-export const hrMenus = [
+export const adminMenus = [
   { name: "Dashboard", link: "/dashboard/admin", icon: FiHome },
   {
     name: "Jobs",
@@ -60,4 +41,17 @@ export const hrMenus = [
   //   link: "/dashboard/admin/queries",
   //   icon: FiHelpCircle,
   // },
+];
+
+export const employeeMenus = [
+  {
+    name: "My Profile",
+    link: "/dashboard/employee/me",
+    icon: FiUser,
+  },
+  {
+    name: "Jobs",
+    link: "/dashboard/employee/jobs",
+    icon: FiMail,
+  },
 ];

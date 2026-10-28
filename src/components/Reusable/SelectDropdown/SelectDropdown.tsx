@@ -31,7 +31,7 @@ const SelectDropdown = forwardRef<HTMLSelectElement, DropdownProps>(
           ref={ref}
           defaultChecked={selected}
           required={isRequired}
-          className={`w-full px-4 py-[14px] rounded-lg bg-white border-2 leading-[18px] focus:outline-none focus:border-primary-10 transition duration-300 cursor-pointer ${
+          className={`w-full px-4 py-[14px] rounded-lg bg-white border-2 leading-[18px] focus:outline-none focus:border-primary-10 transition duration-300 cursor-pointer capitalize ${
             error ? "border-red-500" : "border-neutral-95"
           }`}
           {...rest}
@@ -40,7 +40,7 @@ const SelectDropdown = forwardRef<HTMLSelectElement, DropdownProps>(
             Select {label}
           </option>
           {options.map((option, index) => (
-            <option key={index} value={option}>
+            <option key={index} value={option} className="capitalize">
               {option}
             </option>
           ))}
