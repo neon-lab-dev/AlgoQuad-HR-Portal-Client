@@ -4,11 +4,11 @@ const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAdminStats: builder.query({
       query: () => ({
-        url: `/admin/overview`,
+        url: `/admin/stats`,
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["jobs"],
+      providesTags: ["admin"],
     }),
   }),
 });

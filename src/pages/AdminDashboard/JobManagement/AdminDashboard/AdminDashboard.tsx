@@ -11,22 +11,24 @@ import {
   FiCheckCircle,
   FiXCircle,
 } from "react-icons/fi";
+import { useGetAdminStatsQuery } from "../../../../redux/Features/Admin/adminApi";
 
 const AdminDashboard = () => {
-  // TODO: replace with real query when backend is ready
-  const isLoading = false;
+ const {data, isLoading} = useGetAdminStatsQuery({});
+ const statsData = data?.data || {};
+
   const stats = {
-    activeJobOpenings: 12,
-    totalCandidates: 148,
-    pendingActions: 7,
-    newThisWeek: 23,
+    activeJobOpenings: statsData?.activeJobOpenings,
+    totalCandidates: statsData?.totalCandidates,
+    pendingActions: statsData?.pendingActions,
+    newThisWeek: statsData?.newThisWeek,
     statusSummary: {
-      new: 45,
-      screening: 32,
-      interview: 18,
-      selected: 9,
-      rejected: 28,
-      hired: 16,
+      new: statsData?.statusSummary?.New,
+      screening: statsData?.statusSummary?.Screening,
+      interview: statsData?.statusSummary?.Interview,
+      selected: statsData?.statusSummary?.Selected,
+      rejected: statsData?.statusSummary?.Rejected,
+      hired: statsData?.statusSummary?.Hired,
     },
   };
 
@@ -70,7 +72,7 @@ const AdminDashboard = () => {
     },
   ];
 
-  // Recruitment status summary (§3.2 - basic status summary)
+  // Recruitment status summary
   const statusCards = [
     {
       icon: <FiClock size={28} />,
