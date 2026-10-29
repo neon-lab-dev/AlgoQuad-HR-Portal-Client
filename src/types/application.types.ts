@@ -47,6 +47,7 @@ export type TApplication = {
 
   addedBy?: any;    // admin/hr who manually added the candidate
   isDeleted: boolean;
+  referredBy: any;
 
   createdAt?: Date;
   updatedAt?: Date;

@@ -22,9 +22,10 @@ import { useAddCandidateMutation } from "../../../../redux/Features/Application/
 import { useSelector } from "react-redux";
 import { useCurrentUser } from "../../../../redux/Features/Auth/authSlice";
 import type { TUser } from "../../../../types/user.types";
+import { useGetAllEmployeesQuery } from "../../../../redux/Features/Employee/employeeApi";
 
 // ---- Options ----
-const SOURCE_OPTIONS = ["HR", "Referral", "LinkedIn", "Website"];
+const SOURCE_OPTIONS = ["HR", "Referral", "LinkedIn", "Website", "Other"];
 const STATUS_OPTIONS = [
   "New",
   "Screening",
@@ -41,6 +42,7 @@ export type TAddCandidateFormValues = {
   jobId: string;
   experience: string;
   source: string;
+  referredBy: string;
   status: string;
   resumeRating: number;
   notes: string;
@@ -54,6 +56,7 @@ const EMPTY: TAddCandidateFormValues = {
   jobId: "",
   experience: "",
   source: "HR",
+  referredBy: "",
   status: "New",
   resumeRating: 0,
   notes: "",
@@ -68,6 +71,12 @@ const AddOrEditCandidate = () => {
 
   const user = useSelector(useCurrentUser) as TUser;
   const role = user?.role;
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
+
+  const { data, isLoading: isLoadingEmployees } = useGetAllEmployeesQuery({
+    limit: 1000,
+  });
+  const employees = data?.data || [];
 
   // ---- File Upload State ----
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -88,6 +97,7 @@ const AddOrEditCandidate = () => {
     name: "skills",
   });
   const rating = watch("resumeRating");
+  const source = watch("source");
 
   // Pre-fill jobId if passed in URL
   useEffect(() => {
@@ -139,21 +149,22 @@ const AddOrEditCandidate = () => {
 
     // Use FormData because we are sending a file
     const formData = new FormData();
-    
+
     formData.append("name", data.name);
     formData.append("email", data.email);
     formData.append("phoneNumber", data.phoneNumber);
-    formData.append("jobId", jobId!); 
+    formData.append("jobId", jobId!);
     formData.append("experience", data.experience);
     formData.append("source", data.source);
+    formData.append("referredBy", selectedEmployeeId);
     formData.append("status", data.status);
     formData.append("resumeRating", String(data.resumeRating));
     formData.append("notes", data.notes);
-    
+
     // Append skills array as a JSON string (matching your backend)
     formData.append(
-      "skills", 
-      JSON.stringify((data.skills || []).map((s) => s.trim()).filter(Boolean))
+      "skills",
+      JSON.stringify((data.skills || []).map((s) => s.trim()).filter(Boolean)),
     );
 
     // Append the PDF File (Key must be "resume" to match backend multer)
@@ -259,6 +270,35 @@ const AddOrEditCandidate = () => {
                 error={errors.source}
                 options={SOURCE_OPTIONS}
               />
+
+              {source === "Referral" && (
+                <div className="flex flex-col gap-1 w-full">
+                  <label className="flex flex-row items-center w-full justify-between text-neutral-65">
+                    <span className="text-neutral-10 leading-[18px] text-[15px] font-medium tracking-[-0.16] ">
+                      Select Employee
+                    </span>
+                    <span>
+                      <span className="text-neutral-85 leading-4 text-[13px] font-medium tracking-[-0.14]">
+                        {" "}
+                        Required
+                      </span>
+                    </span>
+                  </label>
+                  <select
+                    value={selectedEmployeeId}
+                    onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                    disabled={isLoadingEmployees}
+                    className="w-full px-4 py-[14px] rounded-lg bg-white border-2 leading-[18px] focus:outline-none focus:border-primary-10 transition duration-300 cursor-pointer capitalize border-neutral-95"
+                  >
+                    <option value="">-- Choose an employee --</option>
+                    {employees.map((emp: any) => (
+                      <option key={emp.userId?._id} value={emp?._id}>
+                        {emp.userId?.name} ({emp.employeeId})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </Section>
 
@@ -364,7 +404,7 @@ const AddOrEditCandidate = () => {
                   </button>
                 </div>
               )}
-              
+
               {resumeError && (
                 <p className="text-xs text-red-500 mt-1">{resumeError}</p>
               )}
@@ -378,7 +418,9 @@ const AddOrEditCandidate = () => {
               label="Cancel"
               type="button"
               classNames="py-2 px-4"
-              onClick={() => navigate(`/dashboard/${role}/job/applications/${jobId}`)}
+              onClick={() =>
+                navigate(`/dashboard/${role}/job/applications/${jobId}`)
+              }
             />
             <Button
               variant="primary"

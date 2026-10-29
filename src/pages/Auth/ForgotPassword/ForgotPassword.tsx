@@ -2,14 +2,9 @@
 import { useForm } from "react-hook-form";
 import TextInput from "../../../components/Reusable/TextInput/TextInput";
 import Button from "../../../components/Reusable/Button/Button";
-import { useDispatch } from "react-redux";
-import {
-  setIsModalOpen,
-  setModalType,
-} from "../../../redux/Features/Auth/authModalSlice";
 import { useForgotPasswordMutation } from "../../../redux/Features/Auth/authApi";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ICONS } from "../../../assets";
 
 type TFormData = {
@@ -17,7 +12,6 @@ type TFormData = {
 };
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
   const {
@@ -74,16 +68,13 @@ const ForgotPassword = () => {
 
         <p className="text-neutral-140 leading-3 text-center">
           Back to{" "}
-          <button
-            onClick={() => {
-              dispatch(setModalType("login"));
-              dispatch(setIsModalOpen(true));
-            }}
+          <Link
+          to="/"
             type="button"
             className="text-primary-10 font-semibold hover:underline cursor-pointer"
           >
             Login
-          </button>
+          </Link>
         </p>
       </form>
     </div>

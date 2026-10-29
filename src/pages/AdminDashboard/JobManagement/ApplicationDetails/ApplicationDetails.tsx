@@ -79,13 +79,12 @@ const ApplicationDetails = () => {
     .slice(0, 2)
     .toUpperCase();
 
-
-    if (isLoading)
-        return (
-          <div className="h-[70vh] flex items-center justify-center">
-            <Loader />
-          </div>
-        );
+  if (isLoading)
+    return (
+      <div className="h-[70vh] flex items-center justify-center">
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="font-Montserrat">
@@ -174,7 +173,7 @@ const ApplicationDetails = () => {
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                 <FiUser size={11} />
                 {application.referredBy
-                  ? `Referred · ${application.referredBy}`
+                  ? `Referred · ${application.referredBy?.name}`
                   : "Direct Application"}
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-105 text-neutral-50 border border-neutral-98">

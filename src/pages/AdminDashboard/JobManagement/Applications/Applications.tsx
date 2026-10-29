@@ -52,7 +52,11 @@ const Applications = () => {
   const [selectedApplicationId, setSelectedApplicationId] =
     useState<string>("");
 
-  const { data: applications, isLoading, isFetching } = useGetAllApplicationsQuery({
+  const {
+    data: applications,
+    isLoading,
+    isFetching,
+  } = useGetAllApplicationsQuery({
     keyword: searchValue,
     skip,
     limit,
@@ -105,6 +109,13 @@ const Applications = () => {
       },
       experience: `${c.experience}`,
       source: <span className="capitalize">{c.source}</span>,
+      referredBy: (
+        <span className="">
+          {c.referredBy?.name ? c.referredBy?.name : "—"}
+          <br />
+          {c.referredBy?.email ? c.referredBy?.email : "—"}
+        </span>
+      ),
       resume: (
         <a
           href={c.resumeUrl}
@@ -138,6 +149,7 @@ const Applications = () => {
     },
     { key: "experience", label: "Exp" },
     { key: "source", label: "Source" },
+    { key: "referredBy", label: "Referred By" },
     { key: "resume", label: "Resume" },
     {
       key: "rating",
