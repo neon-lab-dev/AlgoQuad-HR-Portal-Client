@@ -1,11 +1,5 @@
-import {
-  FiHome,
-  FiMail,
-  FiUsers,
-  FiUser,
-} from "react-icons/fi";
+import { FiHome, FiMail, FiUsers, FiUser } from "react-icons/fi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-
 
 export const hrMenus = [
   { name: "Dashboard", link: "/dashboard/hr", icon: FiHome },
@@ -18,6 +12,16 @@ export const hrMenus = [
     name: "Employees",
     link: "/dashboard/hr/employees",
     icon: FiUsers,
+  },
+  {
+    name: "My Timesheet",
+    link: "/dashboard/hr/timesheet",
+    icon: HiOutlineCalendarDays,
+  },
+  {
+    name: "Team Timesheet",
+    link: "/dashboard/hr/team-timesheet",
+    icon: HiOutlineCalendarDays,
   },
   // {
   //   name: "Queries",
@@ -38,6 +42,11 @@ export const adminMenus = [
     link: "/dashboard/admin/employees",
     icon: FiUsers,
   },
+  {
+    name: "Team Timesheet",
+    link: "/dashboard/admin/team-timesheet",
+    icon: HiOutlineCalendarDays,
+  },
   // {
   //   name: "Queries",
   //   link: "/dashboard/admin/queries",
@@ -52,10 +61,11 @@ export const employeeMenus = [
     icon: FiUser,
   },
   {
-    name: "Timesheet",
+    name: "My Timesheet",
     link: "/dashboard/employee/timesheet",
     icon: HiOutlineCalendarDays,
   },
+
   {
     name: "Jobs",
     link: "/dashboard/employee/jobs",

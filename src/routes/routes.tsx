@@ -18,7 +18,8 @@ import MyProfile from "../pages/AdminDashboard/MyProfile/MyProfile";
 import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
 import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
 import VerifyOTP from "../pages/Auth/VerifyOTP/VerifyOTP";
-import Timesheet from "../pages/Timesheet/Timesheet";
+import MyTimesheet from "../pages/MyTimesheet/MyTimesheet";
+import TeamTimesheet from "../pages/AdminDashboard/TeamTimesheet/TeamTimesheet";
 
 export const router = createBrowserRouter([
   {
@@ -121,6 +122,10 @@ export const router = createBrowserRouter([
         path: "me",
         element: <MyProfile />,
       },
+      {
+        path: "team-timesheet",
+        element: <TeamTimesheet />,
+      },
     ],
   },
   {
@@ -187,7 +192,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "timesheet",
-        element: <Timesheet />,
+        element: <MyTimesheet />,
+      },
+      {
+        path: "team-timesheet",
+        element: <TeamTimesheet />,
       },
     ],
   },
@@ -199,7 +208,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "timesheet",
-        element: <Timesheet />,
+        element: <MyTimesheet />,
       },
       {
         path: "me",
