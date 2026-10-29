@@ -50,17 +50,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  // {
-  //   path: "dashboard",
-  //   element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
-  //   errorElement: <NotFound />,
-  //   children: [
-  //     {
-  //       path: "",
-  //       element: <Dashboard />,
-  //     },
-  //   ],
-  // },
   {
     path: "dashboard/admin",
     element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
@@ -221,9 +210,5 @@ export const router = createBrowserRouter([
         element: <JobDetails />,
       },
     ],
-  },
-  {
-    path: "admin",
-    element: <Login />,
   },
 ]);
