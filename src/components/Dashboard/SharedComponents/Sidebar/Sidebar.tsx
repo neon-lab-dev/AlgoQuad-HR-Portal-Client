@@ -8,7 +8,7 @@ import {
 } from "../../../../redux/Features/Auth/authSlice";
 import type { TUser } from "../../../../types/user.types";
 import Cookies from "js-cookie";
-import { hrMenus } from "./sidebarMenus";
+import { adminMenus, employeeMenus, hrMenus } from "./sidebarMenus";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -18,8 +18,12 @@ const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
   const isActive = (path: string): boolean => location.pathname === path;
 
-  // const sidebarLinks = user?.role === "hr" ? hrMenus : userMenus;
-  const sidebarLinks = hrMenus;
+  const sidebarLinks =
+    user?.role === "hr"
+      ? hrMenus
+      : user?.role === "admin"
+        ? adminMenus
+        : employeeMenus;
 
   const handleLogout = async () => {
     dispatch(setUser({ user: null, token: null }));
@@ -33,16 +37,9 @@ const Sidebar: React.FC = () => {
   return (
     <div className="w-60 min-w-60 h-screen font-Inter hidden xl:flex flex-col justify-between sticky left-0 top-0 font-Montserrat overflow-auto">
       <div className="space-y-7">
-        <Link
-          to="/"
-          className="flex items-center justify-center gap-2 w-full p-5 border-b border-b-neutral-98 border-r border-r-neutral-98 "
-        >
-          <img
-            src={ICONS.logo}
-            alt="AlgoQuad"
-            className=""
-          />
-        </Link>
+        <div className="flex items-center justify-center gap-2 w-full p-5 border-b border-b-neutral-98 border-r border-r-neutral-98 ">
+          <img src={ICONS.logo} alt="AlgoQuad" className="" />
+        </div>
         <div className="px-4">
           <ul className="flex flex-col gap-2">
             {sidebarLinks?.map((menu) => (

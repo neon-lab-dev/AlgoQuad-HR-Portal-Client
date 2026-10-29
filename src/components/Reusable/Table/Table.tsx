@@ -26,8 +26,6 @@ type TableProps<T> = {
   actions?: TableAction<T>[];
   rowKey: keyof T;
   isLoading?: boolean;
-
-  // Pagination Props
   page?: number;
   onPageChange?: (page: number) => void;
   totalPages: number;
@@ -88,10 +86,9 @@ function Table<T extends Record<string, any>>({
 
   const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLimit(Number(e.target.value));
-    onPageChange?.(1); // Reset to page 1 when limit changes
+    onPageChange?.(1);
   };
 
-  // Generate page numbers (e.g., [1, 2, 3, ..., 10])
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
@@ -118,16 +115,20 @@ function Table<T extends Record<string, any>>({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-neutral-98 max-w-full relative">
-      <div className={isLoading ? "" : "overflow-x-auto"}>
-        <table className="min-w-full divide-y divide-neutral-98">
+    /* 1. Outer wrapper: Use min-w-0 to prevent flex/grid parents from expanding */
+    <div className="bg-white rounded-lg shadow-sm border border-neutral-98 w-full min-w-0 relative">
+      
+      {/* 2. Scrollable container: Use overflow-x-auto and w-full */}
+      <div className="w-full overflow-x-auto">
+        {/* 3. Table: Use whitespace-nowrap on cells to force horizontal scroll instead of wrapping */}
+        <table className="w-full min-w-max divide-y divide-neutral-98">
           <thead className="bg-neutral-105">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
                   scope="col"
-                  className={`px-6 py-3 text-left text-xs font-medium text-neutral-60 uppercase tracking-wider ${
+                  className={`px-6 py-3 text-left text-xs font-medium text-neutral-60 uppercase tracking-wider whitespace-nowrap ${
                     col.className || ""
                   }`}
                 >
@@ -135,7 +136,7 @@ function Table<T extends Record<string, any>>({
                 </th>
               ))}
               {actions.length > 0 && (
-                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-60 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-60 uppercase tracking-wider whitespace-nowrap">
                   Actions
                 </th>
               )}
@@ -160,7 +161,8 @@ function Table<T extends Record<string, any>>({
                     {columns.map((col) => (
                       <td
                         key={col.key}
-                        className={`px-6 py-4 text-sm ${
+                        /* 4. Added whitespace-nowrap here */
+                        className={`px-6 py-4 text-sm whitespace-nowrap ${
                           col.className || "text-neutral-60"
                         }`}
                       >
@@ -195,7 +197,7 @@ function Table<T extends Record<string, any>>({
         </table>
       </div>
 
-      {/* Dropdown */}
+      {/* Dropdown (Unchanged) */}
       {openMenu && (
         <div
           className="fixed z-50 w-50 bg-white rounded-md shadow-lg py-1 border border-neutral-98"
@@ -235,10 +237,9 @@ function Table<T extends Record<string, any>>({
         </div>
       )}
 
-      {/* ====== PAGINATION ====== */}
+      {/* Pagination (Unchanged) */}
       {totalPages > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-neutral-98 gap-4">
-          {/* Left: Limit Selector */}
           <div className="flex items-center gap-2 text-sm text-neutral-60">
             <span>Show</span>
             <select
@@ -254,7 +255,6 @@ function Table<T extends Record<string, any>>({
             <span>entries</span>
           </div>
 
-          {/* Right: Page Controls */}
           <div className="flex items-center gap-1">
             <button
               disabled={page === 1}

@@ -2,7 +2,7 @@
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { useLoginMutation } from "../../../redux/Features/Auth/authApi";
@@ -10,6 +10,7 @@ import { setUser } from "../../../redux/Features/Auth/authSlice";
 import TextInput from "../../../components/Reusable/TextInput/TextInput";
 import PasswordInput from "../../../components/Reusable/PasswordInput/PasswordInput";
 import Button from "../../../components/Reusable/Button/Button";
+import { ICONS } from "../../../assets";
 
 type TFormData = {
   email: string;
@@ -55,8 +56,16 @@ const Login = () => {
 
       if (response?.success) {
         dispatch(setUser({ user, token: response?.data?.accessToken }));
-        toast.success(response?.message);
-        navigate("/dashboard/admin");
+        if (user?.isFirstLogin) {
+          localStorage.setItem("resetEmail", user?.email);
+          navigate("/reset-password?purpose=firstTimeLogin");
+        } else if (user?.role === "admin") {
+          navigate("/dashboard/admin");
+        } else if (user?.role === "hr") {
+          navigate("/dashboard/hr");
+        } else if (user?.role === "employee") {
+          navigate("/dashboard/employee/me");
+        }
       }
     } catch (err: any) {
       toast.error(err?.data?.message || "Something went wrong!");
@@ -65,9 +74,10 @@ const Login = () => {
   return (
     <div className="bg-neutral-150  h-screen flex flex-col justify-center items-center font-Montserrat">
       <div className="rounded-2xl p-6 w-full md:w-[400px] lg:w-[480px] bg-white">
+          <img src={ICONS.logo} alt="AlgoQuad" className="w-50 mx-auto mb-2" />
         <form
           onSubmit={handleSubmit(handleLogin)}
-          className="flex flex-col gap-6 lg:gap-5"
+          className="flex flex-col gap-6"
         >
           <h1 className="text-neutral-140 leading-5 font-semibold text-center text-xl mb-3">
             Welcome Back
@@ -98,11 +108,14 @@ const Login = () => {
               setIsPasswordVisible={setIsPasswordVisible}
             />
 
-            {/* <div className="flex justify-end">
-            <button className="text-primary-20 font-semibold hover:underline cursor-pointer">
-              Forgot Password?
-            </button>
-          </div> */}
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-primary-10 font-semibold hover:underline cursor-pointer"
+              >
+                Forgot Password?
+              </Link>
+            </div>
           </div>
 
           <Button
@@ -112,15 +125,6 @@ const Login = () => {
             classNames="w-full"
             isLoading={isLoading}
           />
-          {/* <p className="text-neutral-140 leading-5 mt-2 text-center">
-          New to HanjiFinance?{" "}
-          <button
-            type="button"
-            className="text-primary-20 font-semibold hover:underline cursor-pointer"
-          >
-            Signup
-          </button>
-        </p> */}
         </form>
       </div>
     </div>

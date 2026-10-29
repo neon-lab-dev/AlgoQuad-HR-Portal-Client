@@ -30,7 +30,7 @@ const Button: React.FC<ReusableButtonProps> = ({
       : variant === "secondary"
       ? "border border-primary-10 text-primary-10 py-[10px] bg-transparent disabled:bg-gray-300 disabled:border-primary-10/70 hover:bg-primary-10 hover:text-white hover:scale-105 active:scale-95"
       : variant === "tertiary"
-      ? "text-primary-15 bg-transparent py-4 px-8 hover:scale-105 active:scale-95"
+      ? "text-primary-10 bg-transparent py-4 px-8 hover:scale-105 active:scale-95"
       : variant === "disabled"
       ? "bg-neutral-150 text-neutral-90 cursor-not-allowed border-2 border-neutral-98 hover:none"
       : variant === "custom"

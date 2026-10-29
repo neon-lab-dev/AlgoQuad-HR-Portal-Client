@@ -1,113 +1,74 @@
-import {
-  FiHome,
-  FiMail,
-  // FiBox,
-  // FiShoppingCart,
-  FiBookOpen,
-  FiUserCheck,
-  FiUsers,
-  // FiKey,
-  FiUser,
-  FiShoppingBag,
-  FiHelpCircle,
-} from "react-icons/fi";
-// import { AiOutlineCheckCircle, AiOutlineTag } from "react-icons/ai";
-// import { HiOutlineMegaphone } from "react-icons/hi2";
+import { FiHome, FiMail, FiUsers, FiUser } from "react-icons/fi";
+import { HiOutlineCalendarDays, HiOutlineClipboardDocumentList } from "react-icons/hi2";
 
-export const userMenus = [
-  { name: "Dashboard", link: "/dashboard", icon: FiHome },
+export const hrMenus = [
+  { name: "Dashboard", link: "/dashboard/hr", icon: FiHome },
   {
-    name: "My Courses",
-    link: "/dashboard/my-courses",
-    icon: FiBookOpen,
+    name: "Jobs",
+    link: "/dashboard/hr/jobs",
+    icon: FiMail,
   },
   {
-    name: "My Orders",
-    link: "/dashboard/my-orders",
-    icon: FiShoppingBag,
-  },
-  {
-    name: "Consultations",
-    link: "/dashboard/consultations",
-    icon: FiUserCheck,
-  },
-  {
-    name: "My Subscriptions",
-    link: "/dashboard/my-subscriptions",
+    name: "Employees",
+    link: "/dashboard/hr/employees",
     icon: FiUsers,
   },
   {
-    name: "Help Desk",
-    link: "/dashboard/helpdesk",
-    icon: FiHelpCircle,
+    name: "My Timesheet",
+    link: "/dashboard/hr/timesheet",
+    icon: HiOutlineCalendarDays,
   },
   {
-    name: "My Profile",
-    link: "/dashboard/certificates",
-    icon: FiUser,
+    name: "Team Timesheet",
+    link: "/dashboard/hr/team-timesheet",
+    icon: HiOutlineClipboardDocumentList,
   },
+  // {
+  //   name: "Queries",
+  //   link: "/dashboard/hr/queries",
+  //   icon: FiHelpCircle,
+  // },
 ];
 
-export const hrMenus = [
+export const adminMenus = [
   { name: "Dashboard", link: "/dashboard/admin", icon: FiHome },
   {
     name: "Jobs",
     link: "/dashboard/admin/jobs",
     icon: FiMail,
   },
-  // {
-  //   name: "Category",
-  //   link: "/dashboard/admin/category",
-  //   icon: AiOutlineTag,
-  // },
-  // {
-  //   name: "Products",
-  //   link: "/dashboard/admin/products",
-  //   icon: FiBox,
-  // },
-  // {
-  //   name: "Product Orders",
-  //   link: "/dashboard/admin/product-orders",
-  //   icon: FiShoppingCart,
-  // },
-  // {
-  //   name: "Offer Notice",
-  //   link: "/dashboard/admin/offer-notice",
-  //   icon: HiOutlineMegaphone,
-  // },
-  // {
-  //   name: "Course Orders",
-  //   link: "/dashboard/admin/course-orders",
-  //   icon: FiBookOpen,
-  // },
-  // {
-  //   name: "Courses",
-  //   link: "/dashboard/admin/courses",
-  //   icon: FiBookOpen,
-  // },
-  // {
-  //   name: "Availability",
-  //   link: "/dashboard/admin/manage-availability",
-  //   icon: AiOutlineCheckCircle,
-  // },
-  // {
-  //   name: "Consultations",
-  //   link: "/dashboard/admin/manage-consultations",
-  //   icon: FiUserCheck,
-  // },
-  // {
-  //   name: "Subscriptions",
-  //   link: "/dashboard/admin/manage-subscriptions",
-  //   icon: FiUsers,
-  // },
-  // {
-  //   name: "Coupon Code",
-  //   link: "/dashboard/admin/manage-coupon-codes",
-  //   icon: FiKey,
-  // },
+  {
+    name: "Employees",
+    link: "/dashboard/admin/employees",
+    icon: FiUsers,
+  },
+  {
+    name: "Team Timesheet",
+    link: "/dashboard/admin/team-timesheet",
+    icon: HiOutlineClipboardDocumentList,
+  },
   // {
   //   name: "Queries",
   //   link: "/dashboard/admin/queries",
   //   icon: FiHelpCircle,
   // },
+];
+
+export const employeeMenus = [
+  {
+    name: "My Profile",
+    link: "/dashboard/employee/me",
+    icon: FiUser,
+  },
+  {
+    name: "My Timesheet",
+    link: "/dashboard/employee/timesheet",
+    icon: HiOutlineCalendarDays,
+  },
+
+  {
+    name: "Jobs",
+    link: "/dashboard/employee/jobs",
+    icon: FiMail,
+  },
 ];
