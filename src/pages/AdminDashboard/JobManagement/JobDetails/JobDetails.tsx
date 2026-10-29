@@ -29,6 +29,7 @@ const JobDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useSelector(useCurrentUser) as TUser;
+  const role = user?.role;
   const { data, isLoading } = useGetSingleJobByIdQuery(id!);
   const job = data?.data || {};
 
@@ -88,7 +89,7 @@ const JobDetails = () => {
             <Button
               variant="secondary"
               onClick={() =>
-                navigate(`/dashboard/admin/applications/${job._id}`)
+                navigate(`/dashboard/${role}/applications/${job._id}`)
               }
               label="View Applications"
               classNames="py-2 px-3"
@@ -97,7 +98,7 @@ const JobDetails = () => {
           {user?.role !== "employee" && (
             <Button
               variant="secondary"
-              onClick={() => navigate(`/dashboard/admin/job/edit/${job._id}`)}
+              onClick={() => navigate(`/dashboard/${role}/job/edit/${job._id}`)}
               label="Edit Job"
               classNames="py-2 px-3"
             />
