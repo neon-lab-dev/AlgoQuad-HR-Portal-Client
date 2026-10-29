@@ -127,7 +127,7 @@ const Jobs = () => {
       icon: <FiFile />,
       label: "View Applications",
       onClick: (row: any) =>
-        navigate(`/dashboard/${role}/job/applications/${row._id}`),
+        navigate(`/dashboard/${role}/applications/${row._id}`),
     },
     {
       icon: <FiEdit2 />,
