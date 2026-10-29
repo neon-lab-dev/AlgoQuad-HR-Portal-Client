@@ -23,6 +23,9 @@ import { formatDate } from "../../../../utils/formatDate";
 import ChangeApplicationStatusModal from "../../../../components/AdminDashboard/ApplicationsPage/ChangeApplicationStatusModal/ChangeApplicationStatusModal";
 import { useGetAllApplicationsQuery } from "../../../../redux/Features/Application/applicationApi";
 import type { TApplication } from "../../../../types/application.types";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "../../../../redux/Features/Auth/authSlice";
+import type { TUser } from "../../../../types/user.types";
 
 const STATUS_OPTIONS = [
   "New",
@@ -36,6 +39,9 @@ const STATUS_OPTIONS = [
 const Applications = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
+
+  const user = useSelector(useCurrentUser) as TUser;
+  const role = user?.role;
 
   // ---- Filter state ----
   const [searchValue, setSearchValue] = useState("");
@@ -148,7 +154,7 @@ const Applications = () => {
     icon: <FiEye />,
     label: "View Details",
     onClick: (row: any) =>
-      navigate(`/dashboard/admin/application/${row._id}`),
+      navigate(`/dashboard/${role}/application/${row._id}`),
   },
   {
     icon: <FiEdit3 />,
@@ -308,7 +314,7 @@ const Applications = () => {
                   />
                   <Button
                     variant="primary"
-                    onClick={() => navigate(`/dashboard/admin/candidate/add/${jobId}`)}
+                    onClick={() => navigate(`/dashboard/${role}/candidate/add/${jobId}`)}
                     label="+ Add Candidate"
                     classNames="w-fit py-2 px-4 border-2 border-primary-10"
                   />
