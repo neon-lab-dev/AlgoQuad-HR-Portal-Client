@@ -10,6 +10,7 @@ import { setUser } from "../../../redux/Features/Auth/authSlice";
 import TextInput from "../../../components/Reusable/TextInput/TextInput";
 import PasswordInput from "../../../components/Reusable/PasswordInput/PasswordInput";
 import Button from "../../../components/Reusable/Button/Button";
+import { ICONS } from "../../../assets";
 
 type TFormData = {
   email: string;
@@ -64,7 +65,7 @@ const Login = () => {
           navigate("/dashboard/hr");
         } else if (user?.role === "employee") {
           navigate("/dashboard/employee/me");
-        };
+        }
       }
     } catch (err: any) {
       toast.error(err?.data?.message || "Something went wrong!");
@@ -73,6 +74,7 @@ const Login = () => {
   return (
     <div className="bg-neutral-150  h-screen flex flex-col justify-center items-center font-Montserrat">
       <div className="rounded-2xl p-6 w-full md:w-[400px] lg:w-[480px] bg-white">
+          <img src={ICONS.logo} alt="AlgoQuad" className="w-50 mx-auto mb-2" />
         <form
           onSubmit={handleSubmit(handleLogin)}
           className="flex flex-col gap-6"
@@ -107,7 +109,10 @@ const Login = () => {
             />
 
             <div className="flex justify-end">
-              <Link to="/forgot-password" className="text-sm text-primary-10 font-semibold hover:underline cursor-pointer">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-primary-10 font-semibold hover:underline cursor-pointer"
+              >
                 Forgot Password?
               </Link>
             </div>

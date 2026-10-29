@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import PasswordInput from "../../../components/Reusable/PasswordInput/PasswordInput";
 import Button from "../../../components/Reusable/Button/Button";
 import { useResetPasswordMutation } from "../../../redux/Features/Auth/authApi";
+import { ICONS } from "../../../assets";
 
 type TResetPasswordForm = {
   newPassword: string;
@@ -72,10 +73,16 @@ const ResetPassword = () => {
           className="flex flex-col gap-6 lg:gap-5"
         >
           <div className="text-center mb-3">
+            <img
+              src={ICONS.logo}
+              alt="AlgoQuad"
+              className="w-50 mx-auto mb-2"
+            />
             <h1 className="text-neutral-140 leading-5 font-semibold text-xl">
               Set New Password
             </h1>
           </div>
+
 
           {/* New Password */}
           <PasswordInput

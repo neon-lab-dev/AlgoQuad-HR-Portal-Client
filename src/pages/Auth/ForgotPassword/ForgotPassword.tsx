@@ -10,6 +10,7 @@ import {
 import { useForgotPasswordMutation } from "../../../redux/Features/Auth/authApi";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { ICONS } from "../../../assets";
 
 type TFormData = {
   email: string;
@@ -47,9 +48,12 @@ const ForgotPassword = () => {
         onSubmit={handleSubmit(handleForgotPassword)}
         className="flex flex-col gap-6 rounded-2xl p-6 w-full md:w-[400px] lg:w-[480px] bg-white"
       >
-        <h1 className="text-neutral-140 leading-5 font-semibold text-xl text-center">
-          Reset Your Password
-        </h1>
+        <div>
+          <img src={ICONS.logo} alt="AlgoQuad" className="w-50 mx-auto mb-2" />
+          <h1 className="text-neutral-140 leading-5 font-semibold text-xl text-center mb-3">
+            Reset Your Password
+          </h1>
+        </div>
 
         <TextInput
           label="Enter Registered Email ID"

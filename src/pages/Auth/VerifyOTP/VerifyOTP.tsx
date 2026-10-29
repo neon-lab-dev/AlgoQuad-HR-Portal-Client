@@ -12,6 +12,7 @@ import {
   useVerifyOtpMutation,
   useResendOTPMutation,
 } from "../../../redux/Features/Auth/authApi";
+import { ICONS } from "../../../assets";
 
 const OTP_LENGTH = 6;
 const TIMER_SECONDS = 120; // 2 minutes
@@ -171,6 +172,8 @@ const VerifyOTP = () => {
         className="flex flex-col gap-6 rounded-2xl p-6 w-full md:w-[400px] lg:w-[480px] bg-white"
       >
         <div className="text-center space-y-2">
+          <img src={ICONS.logo} alt="AlgoQuad" className="w-50 mx-auto mb-2" />
+
           <h1 className="text-neutral-140 leading-5 font-semibold text-xl">
             Verify Your Email
           </h1>
