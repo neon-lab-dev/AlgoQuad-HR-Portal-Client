@@ -49,9 +49,10 @@ const Applications = () => {
   const [limit, setLimit] = useState<number>(10);
   const skip = (page - 1) * limit;
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedApplicationId, setSelectedApplicationId] = useState<string>("");
+  const [selectedApplicationId, setSelectedApplicationId] =
+    useState<string>("");
 
-  const { data: applications } = useGetAllApplicationsQuery({
+  const { data: applications, isLoading, isFetching } = useGetAllApplicationsQuery({
     keyword: searchValue,
     skip,
     limit,
@@ -72,11 +73,19 @@ const Applications = () => {
   // ---- Top stats ----
   const stats = {
     total: allApplications?.length || 0,
-    new: allApplications?.filter((c:TApplication) => c.status === "New").length,
-    screening: allApplications?.filter((c:TApplication) => c.status === "Screening").length,
-    interview: allApplications?.filter((c:TApplication) => c.status === "Interview").length,
-    selected: allApplications?.filter((c:TApplication) => c.status === "Selected").length,
-    hired: allApplications?.filter((c:TApplication) => c.status === "Hired").length,
+    new: allApplications?.filter((c: TApplication) => c.status === "New")
+      .length,
+    screening: allApplications?.filter(
+      (c: TApplication) => c.status === "Screening",
+    ).length,
+    interview: allApplications?.filter(
+      (c: TApplication) => c.status === "Interview",
+    ).length,
+    selected: allApplications?.filter(
+      (c: TApplication) => c.status === "Selected",
+    ).length,
+    hired: allApplications?.filter((c: TApplication) => c.status === "Hired")
+      .length,
   };
 
   // ---- Handlers ----
@@ -85,10 +94,9 @@ const Applications = () => {
     setIsChangeStatusModalOpen(true);
   };
 
-
   // ---- Table data ----
   const tableData =
-    allApplications?.map((c:TApplication) => ({
+    allApplications?.map((c: TApplication) => ({
       _id: c._id,
       candidate: {
         name: c.name,
@@ -97,7 +105,7 @@ const Applications = () => {
       },
       experience: `${c.experience}`,
       source: <span className="capitalize">{c.source}</span>,
-      resume:  (
+      resume: (
         <a
           href={c.resumeUrl}
           target="_blank"
@@ -150,24 +158,24 @@ const Applications = () => {
   ];
 
   const actions = [
-  {
-    icon: <FiEye />,
-    label: "View Details",
-    onClick: (row: any) =>
-      navigate(`/dashboard/${role}/application/${row._id}`),
-  },
-  {
-    icon: <FiEdit3 />,
-    label: "Change Status",
-    onClick: (row: any) => openStatusModal(row._raw),
-    className: "text-indigo-600",
-  },
-];
+    {
+      icon: <FiEye />,
+      label: "View Details",
+      onClick: (row: any) =>
+        navigate(`/dashboard/${role}/application/${row._id}`),
+    },
+    {
+      icon: <FiEdit3 />,
+      label: "Change Status",
+      onClick: (row: any) => openStatusModal(row._raw),
+      className: "text-indigo-600",
+    },
+  ];
 
   // ---- Export ----
   const handleExport = () => {
     if (!allApplications?.length) return;
-    const exportData = allApplications?.map((c:TApplication) => ({
+    const exportData = allApplications?.map((c: TApplication) => ({
       ID: c._id,
       Name: c.name,
       Email: c.email,
@@ -314,7 +322,9 @@ const Applications = () => {
                   />
                   <Button
                     variant="primary"
-                    onClick={() => navigate(`/dashboard/${role}/candidate/add/${jobId}`)}
+                    onClick={() =>
+                      navigate(`/dashboard/${role}/candidate/add/${jobId}`)
+                    }
                     label="+ Add Candidate"
                     classNames="w-fit py-2 px-4 border-2 border-primary-10"
                   />
@@ -328,7 +338,7 @@ const Applications = () => {
               data={tableData}
               actions={actions}
               rowKey="_id"
-              //   isLoading={isLoading || isFetching}
+              isLoading={isLoading || isFetching}
               page={page}
               onPageChange={setPage}
               totalPages={applications?.data?.meta?.totalPages || 1}
