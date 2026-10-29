@@ -1,5 +1,5 @@
 import { FiHome, FiMail, FiUsers, FiUser } from "react-icons/fi";
-import { HiOutlineCalendarDays } from "react-icons/hi2";
+import { HiOutlineCalendarDays, HiOutlineClipboardDocumentList } from "react-icons/hi2";
 
 export const hrMenus = [
   { name: "Dashboard", link: "/dashboard/hr", icon: FiHome },
@@ -21,7 +21,7 @@ export const hrMenus = [
   {
     name: "Team Timesheet",
     link: "/dashboard/hr/team-timesheet",
-    icon: HiOutlineCalendarDays,
+    icon: HiOutlineClipboardDocumentList,
   },
   // {
   //   name: "Queries",
@@ -45,7 +45,7 @@ export const adminMenus = [
   {
     name: "Team Timesheet",
     link: "/dashboard/admin/team-timesheet",
-    icon: HiOutlineCalendarDays,
+    icon: HiOutlineClipboardDocumentList,
   },
   // {
   //   name: "Queries",

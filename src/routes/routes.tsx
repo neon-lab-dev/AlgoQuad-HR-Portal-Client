@@ -20,6 +20,7 @@ import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
 import VerifyOTP from "../pages/Auth/VerifyOTP/VerifyOTP";
 import MyTimesheet from "../pages/MyTimesheet/MyTimesheet";
 import TeamTimesheet from "../pages/AdminDashboard/TeamTimesheet/TeamTimesheet";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -62,8 +63,7 @@ export const router = createBrowserRouter([
   // },
   {
     path: "dashboard/admin",
-    // element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
-    element: <DashboardLayout />,
+    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     errorElement: <NotFound />,
     children: [
       {
@@ -130,8 +130,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "dashboard/hr",
-    // element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
-    element: <DashboardLayout />,
+    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     errorElement: <NotFound />,
     children: [
       {
@@ -202,8 +201,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "dashboard/employee",
-    // element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
-    element: <DashboardLayout />,
+    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     errorElement: <NotFound />,
     children: [
       {
