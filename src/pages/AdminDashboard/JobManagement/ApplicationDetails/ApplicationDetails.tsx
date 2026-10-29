@@ -137,11 +137,11 @@ const ApplicationDetails = () => {
               )}
               {application.department && (
                 <>
-                  <span className="text-neutral-98">·</span>
+                  <span className="text-neutral-50/50">·</span>
                   <span>{application.department}</span>
                 </>
               )}
-              <span className="text-neutral-98">·</span>
+              <span className="text-neutral-50/50">·</span>
               <span>Applied {formatDate(application.createdAt)}</span>
             </div>
 
