@@ -43,18 +43,17 @@ const Sidebar: React.FC = () => {
         <div className="px-4">
           <ul className="flex flex-col gap-2">
             {sidebarLinks?.map((menu) => (
-              <li
+              <Link
+                to={menu.link}
                 key={menu.link}
                 className={`px-3 py-2 ${
                   isActive(menu.link)
                     ? "bg-primary-10/10 text-primary-10 font-semibold"
                     : "text-neutral-20 "
-                } hover:bg-neutral-155 rounded-lg text-neutral-20 font-medium cursor-pointer transition duration-300 ease-in-out`}
+                } hover:bg-neutral-155 rounded-lg text-neutral-20 font-medium cursor-pointer transition duration-300 ease-in-out flex items-center gap-3`}
               >
-                <Link to={menu.link} className="flex items-center gap-3">
-                  <menu.icon className="text-lg" /> {menu.name}
-                </Link>
-              </li>
+                <menu.icon className="text-lg" /> {menu.name}
+              </Link>
             ))}
           </ul>
         </div>
