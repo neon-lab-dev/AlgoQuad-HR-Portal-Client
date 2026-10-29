@@ -19,6 +19,9 @@ import SelectDropdown from "../../../../components/Reusable/SelectDropdown/Selec
 import Button from "../../../../components/Reusable/Button/Button";
 import { DynamicList } from "../AddOrEditJob/AddOrEditJob";
 import { useAddCandidateMutation } from "../../../../redux/Features/Application/applicationApi";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "../../../../redux/Features/Auth/authSlice";
+import type { TUser } from "../../../../types/user.types";
 
 // ---- Options ----
 const SOURCE_OPTIONS = ["HR", "Referral", "LinkedIn", "Website"];
@@ -62,6 +65,9 @@ const AddOrEditCandidate = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [addCandidate, { isLoading: isAdding }] = useAddCandidateMutation();
+
+  const user = useSelector(useCurrentUser) as TUser;
+  const role = user?.role;
 
   // ---- File Upload State ----
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -156,7 +162,7 @@ const AddOrEditCandidate = () => {
     try {
       await addCandidate(formData).unwrap();
       toast.success("Candidate added successfully.");
-      navigate(`/dashboard/admin/applications/${jobId}`);
+      navigate(`/dashboard/${role}/applications/${jobId}`);
     } catch (err: any) {
       console.error(err);
       toast.error(err?.data?.message || "Failed to add candidate.");
@@ -372,7 +378,7 @@ const AddOrEditCandidate = () => {
               label="Cancel"
               type="button"
               classNames="py-2 px-4"
-              onClick={() => navigate(`/dashboard/admin/applications/${jobId}`)}
+              onClick={() => navigate(`/dashboard/${role}/job/applications/${jobId}`)}
             />
             <Button
               variant="primary"

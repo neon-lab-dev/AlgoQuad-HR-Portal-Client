@@ -17,6 +17,9 @@ import {
   usePostJobMutation,
   useUpdateJobMutation,
 } from "../../../../redux/Features/Job/jobApi";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "../../../../redux/Features/Auth/authSlice";
+import type { TUser } from "../../../../types/user.types";
 
 // ---- Options ----
 export const DEPARTMENT_OPTIONS = [
@@ -73,6 +76,9 @@ const AddOrEditJob = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
+
+  const user = useSelector(useCurrentUser) as TUser;
+  const role = user?.role;
 
   // ---- Fetch single job (edit mode only) ----
   const { data: jobData, isLoading: isLoadingJob } = useGetSingleJobByIdQuery(
@@ -161,7 +167,7 @@ const AddOrEditJob = () => {
         await postJob(cleaned).unwrap();
         toast.success("Job created successfully.");
       }
-      navigate("/dashboard/admin/jobs");
+      navigate(`/dashboard/${role}/jobs`);
     } catch (err: any) {
       toast.error(err?.data?.message || "Something went wrong.");
     }
@@ -335,7 +341,7 @@ const AddOrEditJob = () => {
               label="Cancel"
               type="button"
               classNames="py-2 px-4"
-              onClick={() => navigate("/dashboard/admin/jobs")}
+              onClick={() => navigate(`/dashboard/${role}/jobs`)}
             />
             <Button
               variant="primary"

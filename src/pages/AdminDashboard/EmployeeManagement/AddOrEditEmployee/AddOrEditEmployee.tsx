@@ -71,6 +71,7 @@ const AddOrEditEmployee = () => {
   const isEdit = Boolean(id);
 
   const loggedInUser = useSelector(useCurrentUser) as TUser;
+  const role = loggedInUser.role;
 
   // ---- Fetch single employee (edit mode only) ----
   const { data: empData, isLoading: isLoadingEmp } =
@@ -160,7 +161,7 @@ const AddOrEditEmployee = () => {
         await addEmployee(formData).unwrap();
         toast.success("Employee created successfully.");
       }
-      navigate("/dashboard/admin/employees");
+      navigate(`/dashboard/${role}/employees`);
     } catch (err: any) {
       toast.error(err?.data?.message || "Something went wrong.");
     }
@@ -371,7 +372,7 @@ const AddOrEditEmployee = () => {
               label="Cancel"
               type="button"
               classNames="py-2 px-4"
-              onClick={() => navigate("/dashboard/admin/employees")}
+              onClick={() => navigate(`/dashboard/${role}/employees`)}
             />
             <Button
               variant="primary"
