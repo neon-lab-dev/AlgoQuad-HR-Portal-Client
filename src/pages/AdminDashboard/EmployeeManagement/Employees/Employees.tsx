@@ -27,9 +27,13 @@ import {
 import type { TEmployee } from "../../../../types/employee.types";
 import { Link, useNavigate } from "react-router-dom";
 import { DEPARTMENT_OPTIONS } from "../../JobManagement/AddOrEditJob/AddOrEditJob";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "../../../../redux/Features/Auth/authSlice";
+import type { TUser } from "../../../../types/user.types";
 
 const Employees = () => {
   const navigate = useNavigate();
+  const user = useSelector(useCurrentUser) as TUser;
   // ---- State ----
   const [searchValue, setSearchValue] = useState("");
   const [page, setPage] = useState<number>(1);
@@ -147,16 +151,18 @@ const Employees = () => {
     },
   ];
 
+    const role = user?.role;
+
   const actions = [
     {
       icon: <FiEye />,
       label: "View Profile",
-      onClick: (row: any) => navigate(`/dashboard/admin/employee/${row._id}`),
+      onClick: (row: any) => navigate(`/dashboard/${role}/employee/${row._id}`),
     },
     {
       icon: <FiEdit2 />,
       label: "Edit Employee",
-      onClick: (row: any) => navigate(`/dashboard/admin/employee/edit/${row._id}`),
+      onClick: (row: any) => navigate(`/dashboard/${role}/employee/edit/${row._id}`),
       className: "text-blue-600",
     },
     {
@@ -219,6 +225,8 @@ const Employees = () => {
       `employees_export_${new Date().toISOString().split("T")[0]}.xlsx`,
     );
   };
+
+
 
   return (
     <div>
@@ -325,7 +333,7 @@ const Employees = () => {
                     label="Export"
                     classNames="w-fit py-2 px-3"
                   />
-                  <Link to="/dashboard/admin/employee/add">
+                  <Link to={`/dashboard/${role}/employee/add`}>
                     <Button
                       variant="primary"
                       label="+ Add Employee"

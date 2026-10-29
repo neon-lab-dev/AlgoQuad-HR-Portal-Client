@@ -114,22 +114,25 @@ const Jobs = () => {
     { key: "createdDate", label: "Created" },
   ];
 
+  const role = user?.role;
+
+
   const actions = [
     {
       icon: <FiEye />,
       label: "View Details",
-      onClick: (row: any) => navigate(`/dashboard/admin/job/${row._id}`),
+      onClick: (row: any) => navigate(`/dashboard/${role}/job/${row._id}`),
     },
     {
       icon: <FiFile />,
       label: "View Applications",
       onClick: (row: any) =>
-        navigate(`/dashboard/admin/applications/${row._id}`),
+        navigate(`/dashboard/${role}/job/applications/${row._id}`),
     },
     {
       icon: <FiEdit2 />,
       label: "Edit",
-      onClick: (row: any) => navigate(`/dashboard/admin/job/edit/${row._id}`),
+      onClick: (row: any) => navigate(`/dashboard/${role}/job/edit/${row._id}`),
       className: "text-blue-600",
     },
     {
@@ -158,7 +161,7 @@ const Jobs = () => {
     {
       icon: <FiEye />,
       label: "View Details",
-      onClick: (row: any) => navigate(`/dashboard/admin/job/${row._id}`),
+      onClick: (row: any) => navigate(`/dashboard/${role}/job/${row._id}`),
     },
     {
       icon: <HiOutlineShare />,
@@ -191,6 +194,8 @@ const Jobs = () => {
     const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     saveAs(new Blob([buf], { type: "application/octet-stream" }), "jobs.xlsx");
   };
+
+
 
   return (
     <div>
@@ -300,7 +305,7 @@ const Jobs = () => {
                   {user?.role !== "employee" && (
                     <Button
                       variant="primary"
-                      onClick={() => navigate("/dashboard/admin/jobs/create")}
+                      onClick={() => navigate(`/dashboard/${role}/jobs/create`)}
                       label="+ Create Job"
                       classNames="w-fit py-2 px-4 border-2 border-primary-10"
                     />
