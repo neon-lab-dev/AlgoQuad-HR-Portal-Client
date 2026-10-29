@@ -21,10 +21,14 @@ import {
   useUpdateJobMutation,
 } from "../../../../redux/Features/Job/jobApi";
 import Loader from "../../../../components/Shared/Loader/Loader";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "../../../../redux/Features/Auth/authSlice";
+import type { TUser } from "../../../../types/user.types";
 
 const JobDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const user = useSelector(useCurrentUser) as TUser;
   const { data, isLoading } = useGetSingleJobByIdQuery(id!);
   const job = data?.data || {};
 
@@ -40,6 +44,8 @@ const JobDetails = () => {
       error: (err: any) => err?.data?.message || "Something went wrong!",
     });
   };
+
+  const careerUrl = `https://www.algoquad.in/career/job/${id}?referrer=${user?._id}`;
 
   if (isLoading)
     return (
@@ -61,19 +67,43 @@ const JobDetails = () => {
         </button>
 
         <div className="flex items-center gap-3 flex-wrap">
-          <Button
-            variant="secondary"
-            onClick={() => navigate(`/dashboard/admin/applications/${job._id}`)}
-            label="View Applications"
-            classNames="py-2 px-3"
-          />
-          <Button
-            variant="secondary"
-            onClick={() => navigate(`/dashboard/admin/job/edit/${job._id}`)}
-            label="Edit Job"
-            classNames="py-2 px-3"
-          />
-          {job?.status !== "Active" && (
+          {/* For employee */}
+          {user?.role === "employee" && (
+            <a
+              href={careerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block"
+            >
+              <Button
+                variant="primary"
+                label="Refer to Connections"
+                classNames="py-2 px-3 border-2 border-primary-10"
+              />
+            </a>
+          )}
+
+          {/* For HR & Admin */}
+          {user?.role !== "employee" && (
+            <Button
+              variant="secondary"
+              onClick={() =>
+                navigate(`/dashboard/admin/applications/${job._id}`)
+              }
+              label="View Applications"
+              classNames="py-2 px-3"
+            />
+          )}
+          {user?.role !== "employee" && (
+            <Button
+              variant="secondary"
+              onClick={() => navigate(`/dashboard/admin/job/edit/${job._id}`)}
+              label="Edit Job"
+              classNames="py-2 px-3"
+            />
+          )}
+
+          {user?.role !== "employee" && job?.status !== "Active" && (
             <Button
               variant="primary"
               onClick={() => handleStatusChange("Active")}
@@ -81,7 +111,7 @@ const JobDetails = () => {
               classNames="py-2 px-3 border-2 border-primary-10"
             />
           )}
-          {job?.status === "Active" && (
+          {user?.role !== "employee" && job?.status === "Active" && (
             <Button
               variant="primary"
               onClick={() => handleStatusChange("Closed")}

@@ -18,6 +18,7 @@ import MyProfile from "../pages/AdminDashboard/MyProfile/MyProfile";
 import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
 import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
 import VerifyOTP from "../pages/Auth/VerifyOTP/VerifyOTP";
+import Timesheet from "../pages/Timesheet/Timesheet";
 
 export const router = createBrowserRouter([
   {
@@ -37,10 +38,10 @@ export const router = createBrowserRouter([
         path: "/verify-otp",
         element: <VerifyOTP />,
       },
-       {
-    path: "reset-password",
-    element: <ResetPassword />,
-  },
+      {
+        path: "reset-password",
+        element: <ResetPassword />,
+      },
       {
         path: "/coming-soon",
         element: <ComingSoon />,
@@ -184,11 +185,38 @@ export const router = createBrowserRouter([
         path: "me",
         element: <MyProfile />,
       },
+      {
+        path: "timesheet",
+        element: <Timesheet />,
+      },
+    ],
+  },
+  {
+    path: "dashboard/employee",
+    // element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
+    element: <DashboardLayout />,
+    errorElement: <NotFound />,
+    children: [
+      {
+        path: "timesheet",
+        element: <Timesheet />,
+      },
+      {
+        path: "me",
+        element: <MyProfile />,
+      },
+      {
+        path: "jobs",
+        element: <Jobs />,
+      },
+      {
+        path: "job/:id",
+        element: <JobDetails />,
+      },
     ],
   },
   {
     path: "admin",
     element: <Login />,
   },
- 
 ]);

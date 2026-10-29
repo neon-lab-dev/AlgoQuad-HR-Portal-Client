@@ -4,6 +4,8 @@ import {
   FiUsers,
   FiUser,
 } from "react-icons/fi";
+import { HiOutlineCalendarDays } from "react-icons/hi2";
+
 
 export const hrMenus = [
   { name: "Dashboard", link: "/dashboard/hr", icon: FiHome },
@@ -48,6 +50,11 @@ export const employeeMenus = [
     name: "My Profile",
     link: "/dashboard/employee/me",
     icon: FiUser,
+  },
+  {
+    name: "Timesheet",
+    link: "/dashboard/employee/timesheet",
+    icon: HiOutlineCalendarDays,
   },
   {
     name: "Jobs",

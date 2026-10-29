@@ -63,7 +63,7 @@ const Login = () => {
         } else if (user?.role === "hr") {
           navigate("/dashboard/hr");
         } else if (user?.role === "employee") {
-          navigate("/dashboard/employee");
+          navigate("/dashboard/employee/me");
         };
       }
     } catch (err: any) {

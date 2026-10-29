@@ -28,9 +28,14 @@ import {
 } from "../../../../redux/Features/Job/jobApi";
 import type { TJob } from "../../../../types/job.types";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "../../../../redux/Features/Auth/authSlice";
+import type { TUser } from "../../../../types/user.types";
+import { HiOutlineShare } from "react-icons/hi2";
 
 const Jobs = () => {
   const navigate = useNavigate();
+  const user = useSelector(useCurrentUser) as TUser;
   const [searchValue, setSearchValue] = useState("");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
@@ -88,7 +93,7 @@ const Jobs = () => {
       openings: job.openings,
       location: job.location,
       employmentType: job.employmentType,
-      applicationDeadline : formatDate(job.applicationDeadline),
+      applicationDeadline: formatDate(job.applicationDeadline),
       status: job.status, // rendered via custom component
       createdDate: formatDate(job.createdAt),
     })) || [];
@@ -146,6 +151,22 @@ const Jobs = () => {
       label: "Delete",
       onClick: (row: any) => handleDelete(row._id),
       className: "text-red-600",
+    },
+  ];
+
+  const employeeActions = [
+    {
+      icon: <FiEye />,
+      label: "View Details",
+      onClick: (row: any) => navigate(`/dashboard/admin/job/${row._id}`),
+    },
+    {
+      icon: <HiOutlineShare />,
+      label: "Refer",
+      onClick: (row: any) => {
+        const url = `https://www.algoquad.in/career/job/${row?._id}?referrer=${user?._id}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      },
     },
   ];
 
@@ -268,18 +289,22 @@ const Jobs = () => {
                     <option value="HR">HR</option>
                   </select>
 
-                  <Button
-                    variant="secondary"
-                    onClick={handleExport}
-                    label="Export"
-                    classNames="w-fit py-2 px-3"
-                  />
-                  <Button
-                    variant="primary"
-                    onClick={() => navigate("/dashboard/admin/jobs/create")}
-                    label="+ Create Job"
-                    classNames="w-fit py-2 px-4 border-2 border-primary-10"
-                  />
+                  {user?.role !== "employee" && (
+                    <Button
+                      variant="secondary"
+                      onClick={handleExport}
+                      label="Export"
+                      classNames="w-fit py-2 px-3"
+                    />
+                  )}
+                  {user?.role !== "employee" && (
+                    <Button
+                      variant="primary"
+                      onClick={() => navigate("/dashboard/admin/jobs/create")}
+                      label="+ Create Job"
+                      classNames="w-fit py-2 px-4 border-2 border-primary-10"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -288,7 +313,7 @@ const Jobs = () => {
             <Table
               columns={columns}
               data={tableData}
-              actions={actions}
+              actions={user?.role === "employee" ? employeeActions : actions}
               rowKey="_id"
               isLoading={isLoading || isFetching}
               page={page}
