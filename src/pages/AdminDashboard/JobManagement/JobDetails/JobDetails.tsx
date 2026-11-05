@@ -46,7 +46,7 @@ const JobDetails = () => {
     });
   };
 
-  const careerUrl = `https://www.algoquad.in/career/job/${id}?referrer=${user?._id}`;
+  const careerUrl = `https://www.algoquad.in/career/job/${job?.jobId}?referrer=${user?._id}`;
 
   if (isLoading)
     return (

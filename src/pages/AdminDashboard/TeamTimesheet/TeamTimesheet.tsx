@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   FiChevronLeft,
   FiChevronRight,
@@ -8,26 +8,33 @@ import {
   FiAlertCircle,
   FiUsers,
   FiTrendingUp,
+  FiDownload,
 } from "react-icons/fi";
 import DashboardContainer from "../../../components/Dashboard/SharedComponents/DashboardContainer/DashboardContainer";
 import Loader from "../../../components/Shared/Loader/Loader";
 import { useGetAllEmployeesQuery } from "../../../redux/Features/Employee/employeeApi";
 import { useGetTimesheetOfAnEmployeeQuery } from "../../../redux/Features/Timesheet/timesheetApi";
+import toast from "react-hot-toast";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas-pro";
+import { ICONS } from "../../../assets";
 
 const TeamTimesheet = () => {
   // --- State ---
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
+  // Ref for the area to capture in PDF
+  const printRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
   // --- Queries ---
-  // 1. Fetch all employees for the dropdown
   const { data: employeesData, isLoading: isLoadingEmployees } =
     useGetAllEmployeesQuery({
       limit: 1000,
     });
   const employees = employeesData?.data || [];
 
-  // 2. Fetch the selected employee's timesheet
   const { data: timesheetData, isLoading: isLoadingTimesheet } =
     useGetTimesheetOfAnEmployeeQuery(
       {
@@ -35,10 +42,13 @@ const TeamTimesheet = () => {
         month: currentMonth.getMonth() + 1,
         year: currentMonth.getFullYear(),
       },
-      { skip: !selectedEmployeeId } // Don't fetch until an employee is selected
+      { skip: !selectedEmployeeId },
     );
 
   const timesheet = timesheetData?.data || [];
+  const selectedEmployee = employees.find(
+    (emp: any) => emp._id === selectedEmployeeId,
+  );
 
   // Convert API array into a lookup map: { "2026-10-29": 8 }
   const timesheetMap = timesheet.reduce((acc: any, curr: any) => {
@@ -55,20 +65,20 @@ const TeamTimesheet = () => {
 
   const daysInMonth = getDaysInMonth(
     currentMonth.getFullYear(),
-    currentMonth.getMonth()
+    currentMonth.getMonth(),
   );
   const firstDay = getFirstDayOfMonth(
     currentMonth.getFullYear(),
-    currentMonth.getMonth()
+    currentMonth.getMonth(),
   );
 
   const prevMonth = () =>
     setCurrentMonth(
-      new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1),
     );
   const nextMonth = () =>
     setCurrentMonth(
-      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1),
     );
 
   const monthName = currentMonth.toLocaleString("default", {
@@ -79,14 +89,53 @@ const TeamTimesheet = () => {
   // --- Stats ---
   const totalHoursLogged = Object.values(timesheetMap).reduce(
     (a: any, b: any) => a + b,
-    0
+    0,
   );
   const daysLogged = Object.keys(timesheetMap).length;
 
+  // --- PDF Download Handler ---
+  const handleDownloadPdf = async () => {
+    if (!printRef.current || !selectedEmployee) return;
+    setIsDownloading(true);
+    const toastId = toast.loading("Generating PDF...");
+
+    try {
+      const element = printRef.current;
+
+      // 1. Capture the DOM element as a canvas
+      const canvas = await html2canvas(element, {
+        scale: 2, // Higher resolution
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      // 2. Initialize PDF (A4 size, portrait)
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      // 3. Add Image to PDF
+      pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight);
+
+      // 4. Save the file
+      const fileName = `${selectedEmployee.userId?.name.replace(/\s+/g, "_")}_Timesheet_${monthName.replace(/\s+/g, "_")}.pdf`;
+      pdf.save(fileName);
+
+      toast.success("PDF downloaded successfully!", { id: toastId });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate PDF.", { id: toastId });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div className="font-Montserrat pb-10">
-      {/* ================= HEADER & EMPLOYEE SELECTOR ================= */}
       <DashboardContainer>
+        {/* ================= HEADER & EMPLOYEE SELECTOR ================= */}
         <div className="flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-center mb-8">
           <div>
             <h1 className="text-xl font-bold text-neutral-40">
@@ -111,7 +160,7 @@ const TeamTimesheet = () => {
               >
                 <option value="">-- Choose an employee --</option>
                 {employees.map((emp: any) => (
-                  <option key={emp.userId?._id} value={emp?._id}>
+                  <option key={emp._id} value={emp._id}>
                     {emp.userId?.name} ({emp.employeeId})
                   </option>
                 ))}
@@ -141,6 +190,23 @@ const TeamTimesheet = () => {
                 </button>
               </div>
             </div>
+
+            {/* Download Button (Only shows when an employee is selected) */}
+            {selectedEmployeeId && (
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-neutral-65 uppercase tracking-wide opacity-0 select-none hidden lg:block">
+                  Action
+                </label>
+                <button
+                  onClick={handleDownloadPdf}
+                  disabled={isDownloading || isLoadingTimesheet}
+                  className="flex items-center gap-2 bg-primary-10 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-10/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-[38px]"
+                >
+                  {isDownloading ? "Generating..." : "Download PDF"}
+                  <FiDownload />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -164,65 +230,89 @@ const TeamTimesheet = () => {
             <p className="text-sm text-neutral-65 mt-4">Loading timesheet...</p>
           </div>
         ) : (
-          <>
-            {/* ================= QUICK STATS ================= */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-xl border border-neutral-98 shadow-sm flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary-10/10 flex items-center justify-center">
-                  <FiTrendingUp className="text-primary-10" size={20} />
-                </div>
-                <div>
-                  <p className="text-xs text-neutral-65 font-medium">
-                    Total Hours
-                  </p>
-                  <p className="text-lg font-bold text-neutral-40">
-                    {totalHoursLogged as any}h
-                  </p>
-                </div>
+          /* --- WRAPPER FOR PDF CAPTURE --- */
+          <div ref={printRef} className="bg-white p-8 rounded-xl">
+            {/* --- COMPANY LOGO --- */}
+            <div className="flex justify-center mb-8">
+              <img
+                src={ICONS.logo}
+                alt="AlgoQuad"
+                className="w-70 object-contain"
+                // Note: For best PDF results, use a height (h-12) instead of width (w-50)
+                // so the aspect ratio stays perfect.
+              />
+            </div>
+
+            {/* --- DOCUMENT HEADER --- */}
+            <div className="mb-8 flex justify-between items-end border-b-2 border-neutral-98 pb-6">
+              <div>
+                <h2 className="text-3xl font-bold text-neutral-40 tracking-tight">
+                  Employee Timesheet
+                </h2>
+                <p className="text-sm font-medium text-primary-10 mt-1">
+                  Month: {monthName}
+                </p>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-neutral-98 shadow-sm flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                  <FiCheckCircle className="text-green-600" size={20} />
-                </div>
-                <div>
-                  <p className="text-xs text-neutral-65 font-medium">
-                    Days Logged
-                  </p>
-                  <p className="text-lg font-bold text-neutral-40">
-                    {daysLogged}
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-xl border border-neutral-98 shadow-sm flex items-center gap-3 col-span-2 md:col-span-1">
-                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                  <FiClock className="text-orange-500" size={20} />
-                </div>
-                <div>
-                  <p className="text-xs text-neutral-65 font-medium">
-                    Avg Hours/Day
-                  </p>
-                  <p className="text-lg font-bold text-neutral-40">
-                    {daysLogged > 0
-                      ? ((totalHoursLogged as any) / daysLogged).toFixed(1)
-                      : 0}
-                    h
-                  </p>
-                </div>
+              <div className="text-right">
+                <p className="text-3xl font-bold text-neutral-40">
+                  {selectedEmployee?.userId?.name}
+                </p>
+                <p className="text-lg font-semibold text-neutral-60 mt-0.5">
+                  ID: {selectedEmployee?.employeeId}
+                </p>
+                <p className=" text-neutral-65 mt-0.5">
+                  {selectedEmployee?.designation} ·{" "}
+                  {selectedEmployee?.department}
+                </p>
               </div>
             </div>
 
-            {/* ================= CALENDAR ================= */}
-            <div className="bg-white p-6 rounded-xl border border-neutral-98">
+            {/* --- QUICK STATS --- */}
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              <div className="bg-neutral-105 p-4 rounded-xl border border-neutral-98 flex flex-col items-center justify-center text-center">
+                <FiTrendingUp className="text-primary-10 mb-2" size={24} />
+                <p className="text-xs text-neutral-65 font-medium uppercase tracking-wide">
+                  Total Hours
+                </p>
+                <p className="text-2xl font-bold text-neutral-40 mt-1">
+                  {totalHoursLogged as any}h
+                </p>
+              </div>
+              <div className="bg-neutral-105 p-4 rounded-xl border border-neutral-98 flex flex-col items-center justify-center text-center">
+                <FiCheckCircle className="text-green-600 mb-2" size={24} />
+                <p className="text-xs text-neutral-65 font-medium uppercase tracking-wide">
+                  Days Logged
+                </p>
+                <p className="text-2xl font-bold text-neutral-40 mt-1">
+                  {daysLogged}
+                </p>
+              </div>
+              <div className="bg-neutral-105 p-4 rounded-xl border border-neutral-98 flex flex-col items-center justify-center text-center">
+                <FiClock className="text-orange-500 mb-2" size={24} />
+                <p className="text-xs text-neutral-65 font-medium uppercase tracking-wide">
+                  Avg Hours/Day
+                </p>
+                <p className="text-2xl font-bold text-neutral-40 mt-1">
+                  {daysLogged > 0
+                    ? ((totalHoursLogged as any) / daysLogged).toFixed(1)
+                    : 0}
+                  h
+                </p>
+              </div>
+            </div>
+
+            {/* --- CALENDAR --- */}
+            <div className="bg-white border border-neutral-98 rounded-2xl p-4">
               <div className="grid grid-cols-7 gap-2 mb-2">
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                   (day) => (
                     <div
                       key={day}
-                      className="text-center text-xs font-bold text-neutral-65 uppercase py-2"
+                      className="text-center text-[11px] font-bold text-neutral-60 uppercase tracking-widest py-2 border-b border-neutral-98"
                     >
                       {day}
                     </div>
-                  )
+                  ),
                 )}
               </div>
 
@@ -231,48 +321,43 @@ const TeamTimesheet = () => {
                 {Array.from({ length: firstDay }).map((_, i) => (
                   <div
                     key={`empty-${i}`}
-                    className="h-24 bg-neutral-105/50 rounded-xl"
+                    className="h-24 bg-neutral-105/30 rounded-xl border border-transparent"
                   />
                 ))}
 
                 {/* Days */}
                 {Array.from({ length: daysInMonth }).map((_, i) => {
                   const dayNum = i + 1;
-
-                  // Create the exact date string for this day
                   const iterDate = new Date(
                     currentMonth.getFullYear(),
                     currentMonth.getMonth(),
-                    dayNum
+                    dayNum,
                   );
                   const dateStr = `${iterDate.getFullYear()}-${String(iterDate.getMonth() + 1).padStart(2, "0")}-${String(iterDate.getDate()).padStart(2, "0")}`;
-
-                  // Get hours from the map (defaults to 0)
                   const hours = timesheetMap[dateStr] || 0;
 
-                  // Admin view is strictly read-only, so we don't need click handlers
                   return (
                     <div
                       key={dayNum}
-                      className="relative h-24 p-2 rounded-xl border flex flex-col justify-between transition-all bg-white border-neutral-98"
+                      className="relative h-24 p-2.5 rounded-xl border flex flex-col justify-between bg-white border-neutral-98"
                     >
-                      <span className="text-sm font-semibold text-neutral-40">
+                      <span className="text-sm font-bold text-neutral-40">
                         {dayNum}
                       </span>
 
                       <div className="flex flex-col gap-1">
                         {hours > 0 ? (
                           <span
-                            className={`text-xs font-bold px-2 py-0.5 rounded-md w-fit ${
+                            className={`text-[11px] font-bold px-2 py-1 rounded-md w-fit ${
                               hours >= 8
-                                ? "bg-green-100 text-green-700"
-                                : "bg-yellow-100 text-yellow-700"
+                                ? "bg-green-100 text-green-700 border border-green-200"
+                                : "bg-yellow-100 text-yellow-700 border border-yellow-200"
                             }`}
                           >
                             {hours}h logged
                           </span>
                         ) : (
-                          <span className="text-xs font-medium text-red-400 flex items-center gap-1">
+                          <span className="text-[11px] font-semibold text-red-500 flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md w-fit border border-red-100">
                             <FiAlertCircle size={12} /> Missing
                           </span>
                         )}
@@ -282,7 +367,16 @@ const TeamTimesheet = () => {
                 })}
               </div>
             </div>
-          </>
+
+            {/* --- FOOTER --- */}
+            <div className="mt-8 pt-6 border-t border-neutral-98 flex justify-between items-center text-[10px] text-neutral-65">
+              <p>Generated by AlgoQuad HR Portal</p>
+              <p>
+                Generated on {new Date().toLocaleDateString()} at{" "}
+                {new Date().toLocaleTimeString()}
+              </p>
+            </div>
+          </div>
         )}
       </DashboardContainer>
     </div>
