@@ -48,7 +48,6 @@ const MyTimesheet = () => {
   const [addWorkingHour, { isLoading: isAdding }] = useAddWorkingHourMutation();
 
   const myTimesheet = data?.data || [];
-  console.log(myTimesheet);
 
   // Convert API array into a quick lookup map: { "2026-10-29": 8 }
   const timesheetMap = myTimesheet.reduce((acc: any, curr: any) => {
@@ -128,40 +127,6 @@ const MyTimesheet = () => {
       toast.error(err?.data?.message || "Failed to log hours");
     }
   };
-
-  // --- Weekly Summary Logic (Mock) ---
-  const mockTeamSummary = [
-    {
-      name: "Arjun Sharma",
-      email: "arjun@algoquad.in",
-      mon: 8,
-      tue: 8,
-      wed: 8,
-      thu: 8,
-      fri: 6,
-      total: 38,
-    },
-    {
-      name: "Priya Menon",
-      email: "priya@algoquad.in",
-      mon: 8,
-      tue: 8,
-      wed: 8,
-      thu: 8,
-      fri: 8,
-      total: 40,
-    },
-    {
-      name: "Rahul Verma",
-      email: "rahul@algoquad.in",
-      mon: 8,
-      tue: 8,
-      wed: 8,
-      thu: 8,
-      fri: 8,
-      total: 40,
-    },
-  ];
 
   return (
     <div className="font-Montserrat pb-10">
@@ -266,8 +231,7 @@ const MyTimesheet = () => {
                 );
                 const dateStr = `${iterDate.getFullYear()}-${String(iterDate.getMonth() + 1).padStart(2, "0")}-${String(iterDate.getDate()).padStart(2, "0")}`;
 
-                const isWeekend =
-                  iterDate.getDay() === 0 || iterDate.getDay() === 6;
+                const isWeekend = false;
 
                 // --- Date Comparison Logic ---
                 const today = new Date();
@@ -394,36 +358,6 @@ const MyTimesheet = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-98">
-                {mockTeamSummary.map((emp, idx) => (
-                  <tr key={idx} className="hover:bg-neutral-105/50">
-                    <td className="p-3">
-                      <p className="font-semibold text-neutral-40">
-                        {emp.name}
-                      </p>
-                      <p className="text-xs text-neutral-65">{emp.email}</p>
-                    </td>
-                    {[emp.mon, emp.tue, emp.wed, emp.thu, emp.fri].map(
-                      (h, i) => (
-                        <td key={i} className="p-3 text-center">
-                          <span
-                            className={`inline-block px-2 py-1 rounded-md text-sm font-medium ${h === 8 ? "text-green-600 bg-green-50" : "text-yellow-600 bg-yellow-50"}`}
-                          >
-                            {h}h
-                          </span>
-                        </td>
-                      ),
-                    )}
-                    <td className="p-3 text-right">
-                      <span
-                        className={`font-bold ${emp.total >= 40 ? "text-green-600" : "text-red-500"}`}
-                      >
-                        {emp.total}h
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
             </table>
           </div>
         </DashboardContainer>

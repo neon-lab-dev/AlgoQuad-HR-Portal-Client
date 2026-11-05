@@ -85,34 +85,35 @@ const Jobs = () => {
   };
 
   // ---- Table data ----
-  const tableData =
-    allJobs?.map((job: TJob) => ({
-      _id: job._id,
-      title: job.title,
-      department: job.department,
-      openings: job.openings,
-      location: job.location,
-      employmentType: job.employmentType,
-      applicationDeadline: formatDate(job.applicationDeadline),
-      status: job.status, // rendered via custom component
-      createdDate: formatDate(job.createdAt),
-    })) || [];
+const tableData =
+  allJobs?.map((job: TJob) => ({
+    _id: job._id,
+    jobId: job.jobId,
+    title: job.title,
+    department: job.department,
+    openings: job.openings,
+    location: job.location,
+    employmentType: job.employmentType,
+    applicationDeadline: formatDate(job.applicationDeadline),
+    status: job.status,
+    createdDate: formatDate(job.createdAt),
+  })) || [];
 
-  const columns = [
-    { key: "_id", label: "Job ID" },
-    { key: "title", label: "Job Title" },
-    { key: "department", label: "Department" },
-    { key: "openings", label: "Openings" },
-    { key: "location", label: "Location" },
-    { key: "employmentType", label: "Type" },
-    { key: "applicationDeadline", label: "Deadline" },
-    {
-      key: "status",
-      label: "Status",
-      render: (row: any) => <JobStatusBadge status={row.status} />,
-    },
-    { key: "createdDate", label: "Created" },
-  ];
+const columns = [
+  { key: "jobId", label: "Job ID" }, // <-- Changed key to jobId
+  { key: "title", label: "Job Title" },
+  { key: "department", label: "Department" },
+  { key: "openings", label: "Openings" },
+  { key: "location", label: "Location" },
+  { key: "employmentType", label: "Type" },
+  { key: "applicationDeadline", label: "Deadline" },
+  {
+    key: "status",
+    label: "Status",
+    render: (row: any) => <JobStatusBadge status={row.status} />,
+  },
+  { key: "createdDate", label: "Created" },
+];
 
   const role = user?.role;
 

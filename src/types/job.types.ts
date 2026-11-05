@@ -5,6 +5,7 @@ export type TJobStatus = "Active" | "Closed" | "Draft";
 
 export type TJob = {
   _id: string;
+  jobId: string;
   title: string;
   department: string;
   openings: number;
@@ -17,7 +18,7 @@ export type TJob = {
   qualifications: string[];
   perks: string[];
   applications: string[];
-  applicationDeadline : string;
+  applicationDeadline: string;
   addedBy: any;
   createdAt?: Date;
   updatedAt?: Date;

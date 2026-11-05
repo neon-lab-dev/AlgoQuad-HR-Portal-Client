@@ -47,6 +47,7 @@ export type TEmployeeFormValues = {
   joiningDate: string;
   employmentType: string;
   accountStatus: string;
+  manualId?: string;
 };
 
 const EMPTY: TEmployeeFormValues = {
@@ -121,6 +122,7 @@ const AddOrEditEmployee = () => {
           : "",
         employmentType: employee.employmentType ?? "Full-time",
         accountStatus: employee.accountStatus ?? "Active",
+        manualId: employee.employeeId ?? "",
       });
 
       if (user.profilePicture) {
@@ -354,6 +356,13 @@ const AddOrEditEmployee = () => {
                 })}
                 error={errors.accountStatus}
                 options={["Active", "Inactive"]}
+              />
+              <TextInput
+                label="Employee ID"
+                placeholder="e.g. 12345678, AQ-EMP will be generated automatically"
+                error={errors.manualId}
+                {...register("manualId")}
+                isRequired={false}
               />
             </div>
             {!isEdit && (

@@ -35,7 +35,7 @@ const TeamTimesheet = () => {
         month: currentMonth.getMonth() + 1,
         year: currentMonth.getFullYear(),
       },
-      { skip: !selectedEmployeeId }, // Don't fetch until an employee is selected
+      { skip: !selectedEmployeeId } // Don't fetch until an employee is selected
     );
 
   const timesheet = timesheetData?.data || [];
@@ -55,20 +55,20 @@ const TeamTimesheet = () => {
 
   const daysInMonth = getDaysInMonth(
     currentMonth.getFullYear(),
-    currentMonth.getMonth(),
+    currentMonth.getMonth()
   );
   const firstDay = getFirstDayOfMonth(
     currentMonth.getFullYear(),
-    currentMonth.getMonth(),
+    currentMonth.getMonth()
   );
 
   const prevMonth = () =>
     setCurrentMonth(
-      new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1),
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
     );
   const nextMonth = () =>
     setCurrentMonth(
-      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1),
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
     );
 
   const monthName = currentMonth.toLocaleString("default", {
@@ -79,7 +79,7 @@ const TeamTimesheet = () => {
   // --- Stats ---
   const totalHoursLogged = Object.values(timesheetMap).reduce(
     (a: any, b: any) => a + b,
-    0,
+    0
   );
   const daysLogged = Object.keys(timesheetMap).length;
 
@@ -222,7 +222,7 @@ const TeamTimesheet = () => {
                     >
                       {day}
                     </div>
-                  ),
+                  )
                 )}
               </div>
 
@@ -238,48 +238,45 @@ const TeamTimesheet = () => {
                 {/* Days */}
                 {Array.from({ length: daysInMonth }).map((_, i) => {
                   const dayNum = i + 1;
+
+                  // Create the exact date string for this day
                   const iterDate = new Date(
                     currentMonth.getFullYear(),
                     currentMonth.getMonth(),
-                    dayNum,
+                    dayNum
                   );
                   const dateStr = `${iterDate.getFullYear()}-${String(iterDate.getMonth() + 1).padStart(2, "0")}-${String(iterDate.getDate()).padStart(2, "0")}`;
 
-                  const isWeekend =
-                    iterDate.getDay() === 0 || iterDate.getDay() === 6;
+                  // Get hours from the map (defaults to 0)
                   const hours = timesheetMap[dateStr] || 0;
 
-                  // Admin view is strictly read-only
+                  // Admin view is strictly read-only, so we don't need click handlers
                   return (
                     <div
                       key={dayNum}
-                      className={`relative h-24 p-2 rounded-xl border flex flex-col justify-between transition-all ${
-                        isWeekend
-                          ? "bg-neutral-105/50 border-transparent text-neutral-65"
-                          : "bg-white border-neutral-98"
-                      }`}
+                      className="relative h-24 p-2 rounded-xl border flex flex-col justify-between transition-all bg-white border-neutral-98"
                     >
-                      <span
-                        className={`text-sm font-semibold ${isWeekend ? "text-neutral-50/60" : "text-neutral-40"}`}
-                      >
+                      <span className="text-sm font-semibold text-neutral-40">
                         {dayNum}
                       </span>
 
-                      {!isWeekend && (
-                        <div className="flex flex-col gap-1">
-                          {hours > 0 ? (
-                            <span
-                              className={`text-xs font-bold px-2 py-0.5 rounded-md w-fit ${hours >= 8 ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}
-                            >
-                              {hours}h logged
-                            </span>
-                          ) : (
-                            <span className="text-xs font-medium text-red-400 flex items-center gap-1">
-                              <FiAlertCircle size={12} /> Missing
-                            </span>
-                          )}
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {hours > 0 ? (
+                          <span
+                            className={`text-xs font-bold px-2 py-0.5 rounded-md w-fit ${
+                              hours >= 8
+                                ? "bg-green-100 text-green-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {hours}h logged
+                          </span>
+                        ) : (
+                          <span className="text-xs font-medium text-red-400 flex items-center gap-1">
+                            <FiAlertCircle size={12} /> Missing
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
