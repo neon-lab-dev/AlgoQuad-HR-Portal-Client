@@ -83,7 +83,6 @@ const ResetPassword = () => {
             </h1>
           </div>
 
-
           {/* New Password */}
           <PasswordInput
             label="New Password"

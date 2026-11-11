@@ -1,13 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Button from "../../../components/Reusable/Button/Button";
-import {
-  setIsModalOpen,
-  setModalType,
-} from "../../../redux/Features/Auth/authModalSlice";
 import {
   useVerifyOtpMutation,
   useResendOTPMutation,
@@ -22,7 +17,6 @@ const VerifyOTP = () => {
   const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpMutation();
   const [resendOTP, { isLoading: isResending }] = useResendOTPMutation();
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Get email from localStorage
@@ -246,16 +240,13 @@ const VerifyOTP = () => {
 
           <p className="text-neutral-140 mt-2">
             Back to{" "}
-            <button
-              onClick={() => {
-                dispatch(setModalType("login"));
-                dispatch(setIsModalOpen(true));
-              }}
+            <Link
+              to="/"
               type="button"
               className="text-primary-10 font-semibold hover:underline cursor-pointer"
             >
               Login
-            </button>
+            </Link>
           </p>
         </div>
       </form>

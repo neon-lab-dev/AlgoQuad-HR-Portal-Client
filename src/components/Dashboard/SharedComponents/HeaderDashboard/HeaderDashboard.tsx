@@ -6,6 +6,14 @@ import type { TUser } from "../../../../types/user.types";
 import { useEffect, useState } from "react";
 import DashboardHamburgerMenu from "../../DashboardHamburgerMenu/DashboardHamburgerMenu";
 
+const getGreeting = (): string => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good Morning";
+  if (hour < 17) return "Good Afternoon";
+  if (hour < 21) return "Good Evening";
+  return "Good Night";
+};
+
 const HeaderDashboard = () => {
   const user = useSelector(useCurrentUser) as TUser;
 
@@ -19,6 +27,8 @@ const HeaderDashboard = () => {
     }),
   );
 
+  const [greeting, setGreeting] = useState<string>(getGreeting());
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentDate(
@@ -29,18 +39,22 @@ const HeaderDashboard = () => {
           year: "numeric",
         }),
       );
+      setGreeting(getGreeting());
     }, 1000 * 60);
 
     return () => clearInterval(interval);
   }, []);
 
-  const profilePath = user?.role === "hr" ? "/dashboard/hr/me" : "/dashboard/employee/me";
+  const profilePath =
+    user?.role === "hr" ? "/dashboard/hr/me" : "/dashboard/employee/me";
 
   return (
     <div className="bg-white p-6 border-b border-b-neutral-98 text-3xl flex justify-between items-center pr-4 sticky top-0 z-20 font-Montserrat">
       <DashboardHamburgerMenu />
       <div className="text-neutral-20 space-y-1 hidden xl:flex flex-col">
-        <h2 className="font-medium text-2xl">Good Morning, {user?.name}</h2>
+        <h2 className="font-medium text-2xl">
+          {greeting}, {user?.name}
+        </h2>
         <span className="text-[13px]">{currentDate}</span>
       </div>
       <ul className="flex gap-5">
