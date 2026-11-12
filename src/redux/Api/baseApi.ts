@@ -10,7 +10,7 @@ import Cookies from "js-cookie";
 
 const baseQuery = fetchBaseQuery({
   // baseUrl: "http://localhost:5000/api/v1",
-  baseUrl: "http://13.206.129.199/api/v1",
+  baseUrl: "https://api.algoquad.com/api/v1",
   // baseUrl: "https://apialgoquad.vercel.app/api/v1",   // Production DB for Test
   // baseUrl: "https://algoquad-server.onrender.com/api/v1",   // Development DB
   credentials: "include",
@@ -35,7 +35,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<any> = async (
 
   if (result.error?.status === 401) {
     const res = await fetch(
-      "http://13.206.129.199/api/v1/auth/refresh-token",
+      "https://api.algoquad.com/api/v1/auth/refresh-token",
       {
         credentials: "include",
         method: "POST",
