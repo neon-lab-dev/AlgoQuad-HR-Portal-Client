@@ -1,12 +1,26 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ICONS } from "../../../assets";
 import { useEffect, useState } from "react";
-import { TbLogout2 } from "react-icons/tb";
-import { hrMenus } from "../SharedComponents/Sidebar/sidebarMenus";
+import { adminMenus, employeeMenus, hrMenus } from "../SharedComponents/Sidebar/sidebarMenus";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, setUser, useCurrentUser } from "../../../redux/Features/Auth/authSlice";
+import type { TUser } from "../../../types/user.types";
+import Cookies from "js-cookie";
 
 const DashboardHamburgerMenu = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector(useCurrentUser) as TUser;
+  
+  const sidebarLinks =
+    user?.role === "hr"
+      ? hrMenus
+      : user?.role === "admin"
+        ? adminMenus
+        : employeeMenus;
+        
+  const isActive = (path: string): boolean => location.pathname === path;
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
 
   const toggleHamburgerMenu = () => {
@@ -28,6 +42,16 @@ const DashboardHamburgerMenu = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [isHamburgerOpen]);
+
+  const handleLogout = async () => {
+    dispatch(setUser({ user: null, token: null }));
+    Cookies.remove("accessToken");
+    Cookies.remove("role");
+    dispatch(logout());
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
     <div className="relative hamburgerMenu flex xl:hidden">
       <button onClick={toggleHamburgerMenu} className="size-7 cursor-pointer">
@@ -42,42 +66,68 @@ const DashboardHamburgerMenu = () => {
         }`}
       ></div>
 
-      {/* Side Menu */}
+           {/* Side Menu */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 bg-primary-10 py-8 p-6 w-[250px] overflow-y-auto transition-all duration-300 transform flex flex-col gap-4 items-start justify-between ${
+        className={`fixed inset-y-0 left-0 z-50 bg-white shadow-xl border-r border-neutral-200 px-4 py-6 w-[280px] overflow-y-auto transition-all duration-300 transform flex flex-col justify-between ${
           isHamburgerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <hr className="border border-neutral-50/30 w-full" />
+        <div className="space-y-6">
+          {/* Logo & Close Button Section */}
+          <div className="relative flex items-center justify-between w-full pb-5 border-b border-neutral-100">
+            {/* Added max-h to ensure logo doesn't blow up */}
+            <img src={ICONS.logo} alt="AlgoQuad" className="max-w-[170px] object-contain" />
+            
+            {/* Close Button */}
+            <button 
+              onClick={toggleHamburgerMenu} 
+              className="text-neutral-400 hover:text-neutral-800 p-1 cursor-pointer transition-colors"
+              aria-label="Close menu"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            {hrMenus?.map((link: any) => (
-              <Link
-                key={link?.name}
-                to={link?.link}
-                onClick={toggleHamburgerMenu}
-                className={`flex items-center gap-2 rounded-lg p-2 transform transition-transform duration-500 hover:-translate-y-1 ${
-                  location?.pathname === link?.link
-                    ? "bg-white text-primary-10 font-semibold"
-                    : "font-medium  text-white  bg-none"
-                }`}
-              >
-                <div className="size-6 rounded-full flex items-center justify-center bg-primary-10 text-white">
-                  {link?.icon}
-                </div>
-                {link?.name}
-              </Link>
-            ))}
+          {/* Links Section */}
+          <div>
+            <ul className="flex flex-col gap-1">
+              {sidebarLinks?.map((menu) => (
+                <Link
+                  to={menu.link}
+                  key={menu.link}
+                  onClick={() => setIsHamburgerOpen(false)}
+                  // CHANGED: Added text-sm to force smaller text, and text-[15px] if you want something in between
+                  className={`px-3 py-2.5 text-[15px] ${
+                    isActive(menu.link)
+                      ? "bg-primary-10/10 text-primary-10 font-semibold"
+                      : "text-neutral-600 font-medium"
+                  } hover:bg-neutral-100 rounded-lg cursor-pointer transition duration-300 ease-in-out flex items-center gap-3`}
+                >
+                  {/* CHANGED: Reduced icon size to text-base */}
+                  <menu.icon className="text-base shrink-0" /> 
+                  <span className="truncate">{menu.name}</span>
+                </Link>
+              ))}
+            </ul>
           </div>
         </div>
 
-        <button
-          className={`text-lg flex items-center gap-2 rounded-lg p-2 transform transition-transform duration-500 hover:-translate-y-1 text-white font-semibold cursor-pointer`}
-        >
-          <TbLogout2 className="text-xl" />
-          Sign Out
-        </button>
+        {/* Logout Section */}
+        <div className="mb-2">
+          <button
+            onClick={handleLogout}
+            className="hover:bg-primary-10/10 hover:text-primary-10 text-neutral-600 font-medium text-[15px] leading-[22px] w-full rounded-lg flex items-center gap-2 justify-between py-2 px-3 cursor-pointer transition-colors"
+          >
+            Logout
+            <img
+              src={ICONS.arrowLogout}
+              alt="logout-icon"
+              className="size-[16px] shrink-0"
+            />
+          </button>
+        </div>
       </div>
     </div>
   );
