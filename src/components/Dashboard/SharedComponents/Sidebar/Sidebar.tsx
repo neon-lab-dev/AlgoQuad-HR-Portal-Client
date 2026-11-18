@@ -14,7 +14,6 @@ const Sidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useSelector(useCurrentUser) as TUser;
-  console.log(user);
   const dispatch = useDispatch();
   const isActive = (path: string): boolean => location.pathname === path;
 

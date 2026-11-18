@@ -43,6 +43,11 @@ export const adminMenus = [
     icon: FiUsers,
   },
   {
+    name: "My Timesheet",
+    link: "/dashboard/admin/timesheet",
+    icon: HiOutlineCalendarDays,
+  },
+  {
     name: "Team Timesheet",
     link: "/dashboard/admin/team-timesheet",
     icon: HiOutlineClipboardDocumentList,
@@ -65,7 +70,6 @@ export const employeeMenus = [
     link: "/dashboard/employee/timesheet",
     icon: HiOutlineCalendarDays,
   },
-
   {
     name: "Jobs",
     link: "/dashboard/employee/jobs",

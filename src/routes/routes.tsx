@@ -52,7 +52,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "dashboard/admin",
-    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     errorElement: <NotFound />,
     children: [
       {
@@ -112,6 +116,10 @@ export const router = createBrowserRouter([
         element: <MyProfile />,
       },
       {
+        path: "timesheet",
+        element: <MyTimesheet />,
+      },
+      {
         path: "team-timesheet",
         element: <TeamTimesheet />,
       },
@@ -119,7 +127,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "dashboard/hr",
-    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     errorElement: <NotFound />,
     children: [
       {
@@ -190,7 +202,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "dashboard/employee",
-    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     errorElement: <NotFound />,
     children: [
       {

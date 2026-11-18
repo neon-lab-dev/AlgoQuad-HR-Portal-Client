@@ -25,6 +25,7 @@ import type { TUser } from "../../../../types/user.types";
 export const DEPARTMENT_OPTIONS = [
   "Development",
   "Engineering",
+  "Project Management",
   "Design",
   "Product Management",
   "Quality Assurance",
@@ -38,6 +39,11 @@ export const DEPARTMENT_OPTIONS = [
   "HR",
   "Finance",
   "Operations",
+  "Administration",
+  "Administrative",
+  "Admin",
+  "Office Administration",
+  "Business Administration",
 ];
 
 const EMPLOYMENT_TYPE_OPTIONS = ["Full-time", "Part-time", "Contract"];
@@ -83,7 +89,7 @@ const AddOrEditJob = () => {
   // ---- Fetch single job (edit mode only) ----
   const { data: jobData, isLoading: isLoadingJob } = useGetSingleJobByIdQuery(
     id as string,
-    { skip: !isEdit }
+    { skip: !isEdit },
   );
   const job = jobData?.data;
 
@@ -129,12 +135,10 @@ const AddOrEditJob = () => {
         responsibilities: job.responsibilities?.length
           ? job.responsibilities
           : [""],
-        qualifications: job.qualifications?.length
-          ? job.qualifications
-          : [""],
-       applicationDeadline: job.applicationDeadline
-  ? new Date(job.applicationDeadline).toISOString().split("T")[0]
-  : "",
+        qualifications: job.qualifications?.length ? job.qualifications : [""],
+        applicationDeadline: job.applicationDeadline
+          ? new Date(job.applicationDeadline).toISOString().split("T")[0]
+          : "",
       });
     }
   }, [isEdit, job, reset]);
@@ -161,7 +165,7 @@ const AddOrEditJob = () => {
 
     try {
       if (isEdit && id) {
-        await updateJob({ id, data:cleaned }).unwrap();
+        await updateJob({ id, data: cleaned }).unwrap();
         toast.success("Job updated successfully.");
       } else {
         await postJob(cleaned).unwrap();
@@ -255,7 +259,9 @@ const AddOrEditJob = () => {
               type="date"
               error={errors.applicationDeadline}
               isRequired
-              {...register("applicationDeadline", { required: "Deadline is required" })}
+              {...register("applicationDeadline", {
+                required: "Deadline is required",
+              })}
             />
 
             <SelectDropdown
